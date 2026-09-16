@@ -1,0 +1,4 @@
+method,metric_a,metric_b,n_common_blocks,spearman_rho,sign_agreement,reject_a,reject_b,verdict_flips
+fredf,mse,mae,128,0.9663580388207289,0.9296875,False,False,False
+revin,mse,mae,44,0.6356589147286821,0.6363636363636364,False,True,True
+san_lite,mse,mae,128,0.8369861289141183,0.84375,True,True,False

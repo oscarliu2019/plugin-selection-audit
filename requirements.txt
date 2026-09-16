@@ -1,0 +1,42 @@
+# PlugGate 依赖清单
+# 目标硬件: 单张 NVIDIA V100 (Volta, sm_70) —— 不支持 bfloat16 / FlashAttention-2
+#
+# 安装顺序建议:
+#   1) pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+#      (cu121 wheel 仍在支持列表中包含 sm_70; 若只做离线分析可用 --index-url .../whl/cpu)
+#   2) pip install -r requirements.txt
+#
+# ---- 深度学习 (V100 可用: 纯 fp32 + 可选 fp16 AMP) ----
+torch==2.5.1                 # cu121 wheel 支持 sm_70; 不要升到 2.6+ 以免 wheel 掉 sm_70
+einops==0.8.2                # TSLib 骨干依赖
+
+# ---- 数值与数据 ----
+numpy>=1.26,<3.0
+pandas==2.3.3                # 注意: pandas>=3.0 与 TSLib data_loader 不兼容, 必须 <3
+scipy==1.17.1
+scikit-learn==1.7.2          # selector (GBDT / 逻辑回归) + TSLib StandardScaler
+statsmodels==0.15.0          # STL 分解 / ADF 检验 (features.py)
+
+# ---- 统计检验与作图 ----
+scikit-posthocs==0.16.1      # Friedman 后 Nemenyi + CD 图
+autorank==1.3.0              # 一键 omnibus + 事后检验 (交叉校验用)
+matplotlib==3.10.5
+
+# ---- 配置 / 数据获取 / 工程 ----
+PyYAML==6.0.3
+huggingface_hub>=0.34        # 从 thuml/Time-Series-Library 官方数据镜像按需下载单文件
+tqdm==4.70.0
+pytest==9.1.1
+
+# ---- TSLib data_provider 的模块级硬依赖 (即使只做长期预测也必须装) ----
+# 实测: data_provider/data_loader.py 在 import 期就 import 了 m4 / datasets / huggingface_hub,
+#       缺任一个都会在 `from data_provider.data_factory import data_provider` 处直接 ImportError。
+patool==4.0.7
+datasets==5.0.1
+sktime==1.1.0                # 仅分类任务需要, 但被 data_loader 间接引用
+PyWavelets==1.9.0            # WPMixer 等骨干需要
+reformer-pytorch==1.4.4      # Reformer 骨干需要
+local-attention==1.11.2
+
+# ---- 明确不要安装 (零样本大模型依赖, 且多数默认 bf16, V100 不支持) ----
+# chronos-forecasting / tirex-ts / timesfm / jax / mamba_ssm

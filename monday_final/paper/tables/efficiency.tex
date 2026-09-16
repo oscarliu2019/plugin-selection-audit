@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{效率表（单张 V100）：插件新增参数量、每迭代耗时相对基线的开销、峰值显存}
+\label{tab:efficiency}
+\begin{tabular}{lrrrr}
+\toprule
+ & extra\_params & ms\_per\_iter & time\_overhead\_pct & peak\_mem\_mib \\
+\midrule
+DLinear fredf & 0.00 & 3.61 & 17.74 & 24.23 \\
+DLinear none & 0.00 & 3.07 & 0.00 & 22.68 \\
+DLinear revin & 0.00 & 3.30 & 7.44 & 23.43 \\
+DLinear san\_lite & 0.00 & 6.89 & 124.42 & 25.00 \\
+PatchTST fredf & 0.00 & 8.10 & 7.06 & 103.66 \\
+PatchTST none & 0.00 & 7.57 & 0.00 & 104.12 \\
+PatchTST revin & 0.00 & 7.59 & 0.29 & 122.87 \\
+PatchTST san\_lite & 0.00 & 12.71 & 67.96 & 104.96 \\
+TimesNet fredf & 0.00 & 810.47 & -43.30 & 2118.46 \\
+TimesNet none & 0.00 & 1429.30 & 0.00 & 2115.55 \\
+TimesNet revin & 0.00 & 2822.01 & 97.44 & 2121.28 \\
+TimesNet san\_lite & 0.00 & 1248.93 & -12.62 & 2119.25 \\
+iTransformer fredf & 0.00 & 14.86 & 4.02 & 167.96 \\
+iTransformer none & 0.00 & 14.29 & 0.00 & 168.04 \\
+iTransformer revin & 0.00 & 14.18 & -0.73 & 152.87 \\
+iTransformer san\_lite & 0.00 & 22.96 & 60.71 & 169.19 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,340 @@
+# =============================================================================
+# PlugGate 实验矩阵（声明式定义，供 src/scheduler.py 排产 / src/features.py 抽特征使用）
+#
+# 研究问题：已有的 model-agnostic 插件，在哪些 (骨干, 数据集, 预测长度) 格子上该挂、挂哪个。
+# 矩阵规模：4 骨干 × 8 数据集 × 4 horizon × 4 插件(含 none) × seed 策略
+#          = 512 个 1-seed 格 + 廉价数据集补 seed
+# 统计检验的「块」定义 = (数据集 × horizon × 骨干)  →  N = 8×4×4 = 128 ≫ 36（见 src/stats.py 文档）
+# =============================================================================
+
+meta:
+  project: PlugGate
+  version: "0.1.0"
+  # 统一评测协议（任何偏离都必须在 deviations 里显式登记，写进论文）
+  protocol:
+    task_name: long_term_forecast
+    features: M                 # 多变量 -> 多变量
+    seq_len: 96                 # 主表锁定 look-back 96（ILI 用 36，见 datasets.seq_len 覆盖）
+    label_len: 48
+    train_epochs: 10
+    patience: 3
+    learning_rate: 0.0001       # 骨干/数据集可覆盖
+    lradj: type1
+    loss: MSE
+    itr: 1                      # 多 seed 由调度器显式展开，而非 TSLib 的 --itr
+    drop_last_test: false       # 上游已统一为 False；因此 baseline 必须自己重跑
+    num_workers: 4
+    inverse: false
+  deviations:
+    - id: patchtst_traffic_bs
+      what: "PatchTST-Traffic 官方脚本 batch_size=4 → 本文统一改为 16"
+      why: "bs=4 使单格迭代数 3023，单点吃掉约一周；有/无插件一致改动，不影响公平性"
+    - id: amp_on_large
+      what: "Electricity / Traffic 开启 --use_amp (fp16 autocast)"
+      why: "V100 有 fp16 Tensor Core，无 bf16；其余数据集关闭 AMP 以保数值可比性"
+    - id: fft_in_fp32_under_amp
+      what: "AMP 区域内的 torch.fft.* 统一提升到 fp32 执行（src/fft_compat.py 运行期包装）"
+      why: |
+        fp16 cuFFT 只支持 2 的幂信号长度，而 TimesNet 的 FFT_for_Period 与 FredF 频域损失
+        作用在 seq_len+pred_len=192/816 上，会直接 RuntimeError。FFT 只占 TimesNet 极小
+        计算量（主体是 Inception 2D 卷积），改 fp32 不影响吞吐，且精度严格更优。
+        实现为运行期包装 torch.fft，不修改 TSLib 源码。
+    - id: internal_norm_is_hardcoded
+      what: "PatchTST / iTransformer / TimesNet 的实例归一化写死在 forecast() 里，本版 TSLib 无 use_norm 开关"
+      why: |
+        实测（third_party/tslib/models/iTransformer.py:51-56 等）：这三个骨干在 forecast 开头就做
+        「按输入窗口均值/方差归一化」、结尾逆变换。数学上，若我们在外层先做同样的实例归一化，
+        内层变换退化为恒等，整体等价于「只有一层 RevIN」——也就是说
+        **revin 挂到这三个骨干上是可证明的近似 no-op**，其 baseline 本身已内含 RevIN。
+        因此 revin × {PatchTST, iTransformer, TimesNet} 的格子默认被 skip_rules 剪掉，
+        只保留一个小的验证子集用来实证「增益 ≈ 0」这一断言（这本身是论文的一个结论，而非缺陷）。
+        DLinear 源码 0 处 means/stdev，是唯一「真正新增归一化」的骨干。
+
+# -----------------------------------------------------------------------------
+# 骨干（全部为 fp32 手写注意力实现，V100 零改动可跑；显式排除所有 bf16 零样本大模型）
+# cost_factor: 相对 iTransformer 的单迭代成本先验，1-epoch 实测后会被覆盖
+# internal_norm: none(无内置实例归一化) / switchable(可用 use_norm=0 关闭) / hardcoded(写死)
+# -----------------------------------------------------------------------------
+backbones:
+  - name: DLinear
+    cost_factor: 0.30
+    internal_norm: none
+    norm_switch_arg: null
+    horizon_cost_exponent: 0.20
+    hparams: {d_model: 512, d_ff: 2048, e_layers: 2, d_layers: 1, n_heads: 8, factor: 3}
+    note: "源码 0 处 means/stdev → RevIN 在 DLinear 上的增益部分来自『补上它本来没有的归一化』，报告必须分层"
+  - name: PatchTST
+    cost_factor: 1.20
+    internal_norm: hardcoded
+    norm_switch_arg: null
+    horizon_cost_exponent: 0.50
+    hparams: {d_model: 128, d_ff: 256, e_layers: 1, d_layers: 1, n_heads: 4, factor: 3}
+  - name: iTransformer
+    cost_factor: 1.00
+    internal_norm: hardcoded
+    norm_switch_arg: null
+    horizon_cost_exponent: 0.50
+    hparams: {d_model: 512, d_ff: 512, e_layers: 3, d_layers: 1, n_heads: 8, factor: 3}
+  - name: TimesNet
+    cost_factor: 4.00
+    internal_norm: hardcoded
+    norm_switch_arg: null
+    horizon_cost_exponent: 1.00
+    hparams: {d_model: 64, d_ff: 64, e_layers: 2, d_layers: 1, n_heads: 8, factor: 3, top_k: 5}
+    note: "重模型：2D-Inception × top-k 周期；ECL 官方 d_model=256/d_ff=512，此处按可跑优先降到 64"
+
+# -----------------------------------------------------------------------------
+# 插件（严格满足三条硬约束：架构无关 / 训练解耦 / 零新增需逐数据集调的超参）
+# kind: io(输入输出变换) / loss(训练目标)
+# -----------------------------------------------------------------------------
+plugins:
+  - name: none
+    kind: io
+    cost_overhead: 1.00
+    is_control: true
+    desc: "对照组：原始骨干"
+  - name: revin
+    kind: io
+    cost_overhead: 1.02
+    params: {affine: false, eps: 1.0e-5}
+    desc: "可逆实例归一化（RevIN, ICLR'22 精简复现，affine 关闭以保证零新增可调超参）"
+  - name: san_lite
+    kind: io
+    cost_overhead: 1.15
+    params: {slice_len: 24, ridge_lambda: 1.0, std_floor: 0.1}
+    desc: "切片级自适应归一化的免训练变体：切片统计量 + EWMA（半衰期 K/2、斜率隐式为 0）预测未来切片统计量；岭回归线性外推已降级为负面对照（stats_estimator=ridge），默认不启用"
+  - name: fredf
+    kind: loss
+    cost_overhead: 1.05
+    params: {alpha: 0.5}
+    desc: "频域损失（FreDF, ICLR'25 精简复现）：(1-α)·MSE(时域) + α·L1(rFFT 幅度/相位)"
+
+# -----------------------------------------------------------------------------
+# 数据来源（scripts/download_data.py 使用；每个数据集的 hf_path 见下方 datasets 段）
+# 官方长期预测数据包（9 数据集，约 265 MB）已由 TSLib 作者镜像到 HuggingFace，
+# 可直接脚本化下载，无需 Google Drive / 清华云盘的人工点击。
+# -----------------------------------------------------------------------------
+data_source:
+  hf_repo_id: thuml/Time-Series-Library
+  hf_repo_type: dataset
+  base_url: https://huggingface.co/datasets/thuml/Time-Series-Library/resolve/main
+
+# -----------------------------------------------------------------------------
+# 数据集
+#  train_len 按 TSLib data_provider 的切分规则写死（ETTh: 12*30*24, ETTm: ×4, 其余 7:1:2）
+#  windows/epoch = train_len - seq_len - pred_len + 1，由 scheduler 自动算（已核对与尽调表一致）
+#  tier: cheap(补到 3 seed) / mid(1 seed) / heavy(1 seed + AMP)
+#  period: 主周期（供 STL 分解与季节强度特征使用）
+# -----------------------------------------------------------------------------
+datasets:
+  - name: ETTh1
+    tslib_data: ETTh1
+    root_path: data/ETT-small
+    data_path: ETTh1.csv
+    hf_path: ETT-small/ETTh1.csv
+    enc_in: 7
+    total_len: 17420
+    train_len: 8640
+    freq: h
+    period: 24
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 32
+    use_amp: false
+    tier: cheap
+    optional: false
+  - name: ETTh2
+    tslib_data: ETTh2
+    root_path: data/ETT-small
+    data_path: ETTh2.csv
+    hf_path: ETT-small/ETTh2.csv
+    enc_in: 7
+    total_len: 17420
+    train_len: 8640
+    freq: h
+    period: 24
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 32
+    use_amp: false
+    tier: cheap
+    optional: false
+  - name: ETTm1
+    tslib_data: ETTm1
+    root_path: data/ETT-small
+    data_path: ETTm1.csv
+    hf_path: ETT-small/ETTm1.csv
+    enc_in: 7
+    total_len: 69680
+    train_len: 34560
+    freq: t
+    period: 96
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 32
+    use_amp: false
+    tier: mid
+    optional: false
+  - name: ETTm2
+    tslib_data: ETTm2
+    root_path: data/ETT-small
+    data_path: ETTm2.csv
+    hf_path: ETT-small/ETTm2.csv
+    enc_in: 7
+    total_len: 69680
+    train_len: 34560
+    freq: t
+    period: 96
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 32
+    use_amp: false
+    tier: mid
+    optional: false
+  - name: Weather
+    tslib_data: custom
+    root_path: data/weather
+    data_path: weather.csv
+    hf_path: weather/weather.csv
+    enc_in: 21
+    total_len: 52696
+    train_len: 36887
+    freq: t
+    period: 144
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 32
+    use_amp: false
+    tier: mid
+    optional: false
+  - name: Electricity
+    tslib_data: custom
+    root_path: data/electricity
+    data_path: electricity.csv
+    hf_path: electricity/electricity.csv
+    enc_in: 321
+    total_len: 26304
+    train_len: 18412
+    freq: h
+    period: 24
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 16
+    use_amp: true
+    tier: heavy
+    optional: false
+  - name: Exchange
+    tslib_data: custom
+    root_path: data/exchange_rate
+    data_path: exchange_rate.csv
+    hf_path: exchange_rate/exchange_rate.csv
+    enc_in: 8
+    total_len: 7588
+    train_len: 5311
+    freq: d
+    period: 7
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 32
+    use_amp: false
+    tier: cheap
+    optional: false
+  - name: ILI
+    tslib_data: custom
+    root_path: data/illness
+    data_path: national_illness.csv
+    hf_path: illness/national_illness.csv
+    enc_in: 7
+    total_len: 966
+    train_len: 676
+    freq: w
+    period: 52
+    seq_len: 36                 # ILI 专用 look-back
+    label_len: 18
+    horizons: [24, 36, 48, 60]  # ILI 专用 horizon
+    batch_size: 32
+    use_amp: false
+    tier: cheap
+    optional: false
+  - name: Traffic                # 单列为可选：862 通道，绝对耗时大头
+    tslib_data: custom
+    root_path: data/traffic
+    data_path: traffic.csv
+    hf_path: traffic/traffic.csv
+    enc_in: 862
+    total_len: 17544
+    train_len: 12280
+    freq: h
+    period: 24
+    seq_len: 96
+    horizons: [96, 192, 336, 720]
+    batch_size: 16              # 含 PatchTST（官方 4 → 16，见 deviations.patchtst_traffic_bs）
+    use_amp: true
+    tier: heavy
+    optional: true              # 默认不排产；--include-optional 打开
+
+# -----------------------------------------------------------------------------
+# 剪枝规则：把「可先验判定为 no-op」的格子从排产里剪掉，只留验证子集
+# -----------------------------------------------------------------------------
+skip_rules:
+  - id: revin_on_internal_norm_backbones
+    plugin: revin
+    backbone_internal_norm: hardcoded
+    reason: "骨干已内含同款实例归一化，外挂 RevIN 数学上退化为 no-op（见 deviations.internal_norm_is_hardcoded）"
+    keep_verification_subset:
+      datasets: [ETTh1, Weather]
+      horizons: [96, 720]
+      seeds: [2021]
+
+# -----------------------------------------------------------------------------
+# 种子策略：全矩阵 1 seed 建主表；cheap 层补到 3 seed 用于统计检验；heavy 层永远 1 seed
+# -----------------------------------------------------------------------------
+seed_policy:
+  base_seeds: [2021]
+  extra_seeds: [2022, 2023]
+  tiers_with_extra_seeds: [cheap]
+  note: "Traffic/Electricity 仅 1 seed，论文中必须显式声明"
+
+# -----------------------------------------------------------------------------
+# 成本模型（先验；scheduler --probe 用 1-epoch 实测覆盖）
+#   est_sec = iters_per_epoch × ms_per_iter/1000 × expected_epochs × plugin_overhead
+#   ms_per_iter = dataset_base_ms × backbone.cost_factor × horizon_factor
+#   horizon_factor = ((seq_len+pred_len)/(seq_len+base_pred))^backbone.horizon_cost_exponent
+# -----------------------------------------------------------------------------
+cost_model:
+  device: "V100-32GB (fp32; AMP=fp16)"
+  anchor: "VarDrop@RTX3090 ms/iter × 2.0 保守折算 + iTransformer@P100 全基准可跑的存在性证据"
+  dataset_base_ms:            # iTransformer, pred_len=96 基准点
+    ETTh1: 25.0
+    ETTh2: 25.0
+    ETTm1: 25.0
+    ETTm2: 25.0
+    Weather: 40.0
+    Electricity: 82.0
+    Exchange: 20.0
+    ILI: 15.0
+    Traffic: 400.0
+  amp_speedup: 0.75           # 开 AMP 后 ms/iter 折扣
+  expected_epochs: 8.0        # train_epochs=10 + patience=3 的期望实际 epoch 数（phase-1 实测中位 8.0 ✔）
+  # 每 epoch 的 val/test 评估开销。先验拍的是 1.15，但 phase-1 的 835 格实测反解出
+  # train_seconds / (iters×ms×epochs) 的中位数是 **2.22**（p90 6.86）——评估前向
+  # 在长 horizon / 多通道数据集上远不止 15%。这个低估直接导致 TimesNet-h720 的
+  # 单格预估只有 2.2h 而实测单 epoch 就 1.4h。无人值守要靠预估卡截止，必须用实测值。
+  # 复核方式：python -m tools.calibrate_speed --from-config configs/matrix.yaml
+  eval_overhead: 2.22
+  probe_min_iters: 30         # 测速至少跑这么多 iter 才认为可信
+  safety_margin: 1.20         # 排产总预算的安全系数；--deadline 判断"来不来得及"时也乘它
+
+# -----------------------------------------------------------------------------
+# 目录约定（scheduler / runner / report 共用）
+# -----------------------------------------------------------------------------
+paths:
+  tslib_root: third_party/tslib
+  data_root: data
+  runs_dir: runs                       # runs/<cell_id>/{cmd.json,log.txt,epochs.jsonl,checkpoint.pth}
+  cells_dir: results/cells             # results/cells/<cell_id>.json  (存在即视为已完成)
+  results_csv: results/results.csv     # 聚合结果（原子替换写入）
+  speed_csv: results/speed.csv         # 1-epoch 实测速度
+  winerr_dir: results/winerr           # results/winerr/<cell_id>.npy  逐窗口测试 MSE（phase-2）
+  features_csv: artifacts/features.csv
+  artifacts_dir: artifacts

@@ -1,0 +1,379 @@
+# 本文件由 scripts/make_phase2_config.py 从 configs/matrix.yaml 自动派生，请勿手改。
+# 改矩阵定义请改 matrix.yaml 后重新生成，否则 phase-1/phase-2 结果不可比。
+meta:
+  project: PlugGate
+  version: 0.1.0
+  protocol:
+    task_name: long_term_forecast
+    features: M
+    seq_len: 96
+    label_len: 48
+    train_epochs: 10
+    patience: 3
+    learning_rate: 0.0001
+    lradj: type1
+    loss: MSE
+    itr: 1
+    drop_last_test: false
+    num_workers: 4
+    inverse: false
+  deviations:
+  - id: patchtst_traffic_bs
+    what: PatchTST-Traffic 官方脚本 batch_size=4 → 本文统一改为 16
+    why: bs=4 使单格迭代数 3023，单点吃掉约一周；有/无插件一致改动，不影响公平性
+  - id: amp_on_large
+    what: Electricity / Traffic 开启 --use_amp (fp16 autocast)
+    why: V100 有 fp16 Tensor Core，无 bf16；其余数据集关闭 AMP 以保数值可比性
+  - id: fft_in_fp32_under_amp
+    what: AMP 区域内的 torch.fft.* 统一提升到 fp32 执行（src/fft_compat.py 运行期包装）
+    why: 'fp16 cuFFT 只支持 2 的幂信号长度，而 TimesNet 的 FFT_for_Period 与 FredF 频域损失
+
+      作用在 seq_len+pred_len=192/816 上，会直接 RuntimeError。FFT 只占 TimesNet 极小
+
+      计算量（主体是 Inception 2D 卷积），改 fp32 不影响吞吐，且精度严格更优。
+
+      实现为运行期包装 torch.fft，不修改 TSLib 源码。
+
+      '
+  - id: internal_norm_is_hardcoded
+    what: PatchTST / iTransformer / TimesNet 的实例归一化写死在 forecast() 里，本版 TSLib 无 use_norm
+      开关
+    why: '实测（third_party/tslib/models/iTransformer.py:51-56 等）：这三个骨干在 forecast 开头就做
+
+      「按输入窗口均值/方差归一化」、结尾逆变换。数学上，若我们在外层先做同样的实例归一化，
+
+      内层变换退化为恒等，整体等价于「只有一层 RevIN」——也就是说
+
+      **revin 挂到这三个骨干上是可证明的近似 no-op**，其 baseline 本身已内含 RevIN。
+
+      因此 revin × {PatchTST, iTransformer, TimesNet} 的格子默认被 skip_rules 剪掉，
+
+      只保留一个小的验证子集用来实证「增益 ≈ 0」这一断言（这本身是论文的一个结论，而非缺陷）。
+
+      DLinear 源码 0 处 means/stdev，是唯一「真正新增归一化」的骨干。
+
+      '
+backbones:
+- name: DLinear
+  cost_factor: 0.3
+  internal_norm: none
+  norm_switch_arg: null
+  horizon_cost_exponent: 0.2
+  hparams:
+    d_model: 512
+    d_ff: 2048
+    e_layers: 2
+    d_layers: 1
+    n_heads: 8
+    factor: 3
+  note: 源码 0 处 means/stdev → RevIN 在 DLinear 上的增益部分来自『补上它本来没有的归一化』，报告必须分层
+- name: PatchTST
+  cost_factor: 1.2
+  internal_norm: hardcoded
+  norm_switch_arg: null
+  horizon_cost_exponent: 0.5
+  hparams:
+    d_model: 128
+    d_ff: 256
+    e_layers: 1
+    d_layers: 1
+    n_heads: 4
+    factor: 3
+- name: iTransformer
+  cost_factor: 1.0
+  internal_norm: hardcoded
+  norm_switch_arg: null
+  horizon_cost_exponent: 0.5
+  hparams:
+    d_model: 512
+    d_ff: 512
+    e_layers: 3
+    d_layers: 1
+    n_heads: 8
+    factor: 3
+- name: TimesNet
+  cost_factor: 4.0
+  internal_norm: hardcoded
+  norm_switch_arg: null
+  horizon_cost_exponent: 1.0
+  hparams:
+    d_model: 64
+    d_ff: 64
+    e_layers: 2
+    d_layers: 1
+    n_heads: 8
+    factor: 3
+    top_k: 5
+  note: 重模型：2D-Inception × top-k 周期；ECL 官方 d_model=256/d_ff=512，此处按可跑优先降到 64
+plugins:
+- name: none
+  kind: io
+  cost_overhead: 1.0
+  is_control: true
+  desc: 对照组：原始骨干
+- name: revin
+  kind: io
+  cost_overhead: 1.02
+  params:
+    affine: false
+    eps: 1.0e-05
+  desc: 可逆实例归一化（RevIN, ICLR'22 精简复现，affine 关闭以保证零新增可调超参）
+- name: san_lite
+  kind: io
+  cost_overhead: 1.15
+  params:
+    slice_len: 24
+    ridge_lambda: 1.0
+    std_floor: 0.1
+  desc: 切片级自适应归一化的免训练变体：切片统计量 + EWMA（半衰期 K/2、斜率隐式为 0）预测未来切片统计量；岭回归线性外推已降级为负面对照（stats_estimator=ridge），默认不启用
+- name: fredf
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.5
+  desc: 频域损失（FreDF, ICLR'25 精简复现）：(1-α)·MSE(时域) + α·L1(rFFT 幅度/相位)
+data_source:
+  hf_repo_id: thuml/Time-Series-Library
+  hf_repo_type: dataset
+  base_url: https://huggingface.co/datasets/thuml/Time-Series-Library/resolve/main
+datasets:
+- name: ETTh1
+  tslib_data: ETTh1
+  root_path: data/ETT-small
+  data_path: ETTh1.csv
+  hf_path: ETT-small/ETTh1.csv
+  enc_in: 7
+  total_len: 17420
+  train_len: 8640
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: ETTh2
+  tslib_data: ETTh2
+  root_path: data/ETT-small
+  data_path: ETTh2.csv
+  hf_path: ETT-small/ETTh2.csv
+  enc_in: 7
+  total_len: 17420
+  train_len: 8640
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: ETTm1
+  tslib_data: ETTm1
+  root_path: data/ETT-small
+  data_path: ETTm1.csv
+  hf_path: ETT-small/ETTm1.csv
+  enc_in: 7
+  total_len: 69680
+  train_len: 34560
+  freq: t
+  period: 96
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: mid
+  optional: false
+- name: ETTm2
+  tslib_data: ETTm2
+  root_path: data/ETT-small
+  data_path: ETTm2.csv
+  hf_path: ETT-small/ETTm2.csv
+  enc_in: 7
+  total_len: 69680
+  train_len: 34560
+  freq: t
+  period: 96
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: mid
+  optional: false
+- name: Weather
+  tslib_data: custom
+  root_path: data/weather
+  data_path: weather.csv
+  hf_path: weather/weather.csv
+  enc_in: 21
+  total_len: 52696
+  train_len: 36887
+  freq: t
+  period: 144
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: mid
+  optional: false
+- name: Electricity
+  tslib_data: custom
+  root_path: data/electricity
+  data_path: electricity.csv
+  hf_path: electricity/electricity.csv
+  enc_in: 321
+  total_len: 26304
+  train_len: 18412
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 16
+  use_amp: true
+  tier: heavy
+  optional: false
+- name: Exchange
+  tslib_data: custom
+  root_path: data/exchange_rate
+  data_path: exchange_rate.csv
+  hf_path: exchange_rate/exchange_rate.csv
+  enc_in: 8
+  total_len: 7588
+  train_len: 5311
+  freq: d
+  period: 7
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: ILI
+  tslib_data: custom
+  root_path: data/illness
+  data_path: national_illness.csv
+  hf_path: illness/national_illness.csv
+  enc_in: 7
+  total_len: 966
+  train_len: 676
+  freq: w
+  period: 52
+  seq_len: 36
+  label_len: 18
+  horizons:
+  - 24
+  - 36
+  - 48
+  - 60
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: Traffic
+  tslib_data: custom
+  root_path: data/traffic
+  data_path: traffic.csv
+  hf_path: traffic/traffic.csv
+  enc_in: 862
+  total_len: 17544
+  train_len: 12280
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 16
+  use_amp: true
+  tier: heavy
+  optional: true
+skip_rules:
+- id: revin_on_internal_norm_backbones
+  plugin: revin
+  backbone_internal_norm: hardcoded
+  reason: 骨干已内含同款实例归一化，外挂 RevIN 数学上退化为 no-op（见 deviations.internal_norm_is_hardcoded）
+  keep_verification_subset:
+    datasets:
+    - ETTh1
+    - Weather
+    horizons:
+    - 96
+    - 720
+    seeds:
+    - 2021
+seed_policy:
+  base_seeds:
+  - 2021
+  extra_seeds:
+  - 2022
+  - 2023
+  tiers_with_extra_seeds: []
+  note: phase-2 全矩阵仅 seed=2021。逐窗口门控的 N 来自测试窗口数（万级），不再依赖多 seed 撑样本量；但块级 MSE 的 seed
+    方差因此不可估计，论文里所有块级数字一律引用 phase-1 的 3-seed 结果。
+cost_model:
+  device: V100-32GB (fp32; AMP=fp16)
+  anchor: VarDrop@RTX3090 ms/iter × 2.0 保守折算 + iTransformer@P100 全基准可跑的存在性证据
+  dataset_base_ms:
+    ETTh1: 25.0
+    ETTh2: 25.0
+    ETTm1: 25.0
+    ETTm2: 25.0
+    Weather: 40.0
+    Electricity: 82.0
+    Exchange: 20.0
+    ILI: 15.0
+    Traffic: 400.0
+  amp_speedup: 0.75
+  expected_epochs: 8.0
+  eval_overhead: 2.22
+  probe_min_iters: 30
+  safety_margin: 1.2
+paths:
+  tslib_root: third_party/tslib
+  data_root: data
+  runs_dir: runs_p2
+  cells_dir: results/p2/cells
+  results_csv: results/p2/results.csv
+  speed_csv: results/speed.csv
+  winerr_dir: results/p2/winerr
+  features_csv: artifacts/p2/features.csv
+  artifacts_dir: artifacts/p2
+deviations:
+  phase2_window_level:
+    what: 重跑 1-seed 全网格，额外落盘 best epoch 的逐窗口测试 MSE
+    why: phase-1 的特征只有 8 个互异取值（每数据集一份，horizon 间相同），LODO selector 准确率 0.381 低于多数类基线
+      0.405，permutation importance 全为 0；这是决策粒度问题而非模型问题
+    how: scheduler --run --save-window-mse，逐格写 results/p2/winerr/<cell_id>.npy；TSLib
+      的 test loader shuffle=False，故不同格子的第 i 项严格对应同一个测试窗口，可按下标做配对比较
+    cost: 428 格 / 81.0 GPU 小时；升序排产下前三个骨干约 5.6 GPU 小时即可先验证链路

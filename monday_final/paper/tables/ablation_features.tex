@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{特征组消融：逐组移除特征后 selector 的 LODO 准确率与决策收益}
+\label{tab:ablation_features}
+\begin{tabular}{lrrrr}
+\toprule
+ablation & n\_features & lodo\_accuracy & mean\_rel\_gain\_pct & mean\_regret\_vs\_oracle\_pct \\
+\midrule
+full(全部特征) & 38.000 & 0.455 & 4.134 & 2.382 \\
+-pc\_窗口复杂度 & 33.000 & 0.409 & 3.384 & 3.132 \\
+-ns\_非平稳度 & 32.000 & 0.182 & 0.669 & 5.848 \\
+-ch\_通道相关谱 & 32.000 & 0.432 & 3.851 & 2.665 \\
+-fr\_频域集中度 & 35.000 & 0.432 & 3.837 & 2.679 \\
+-sd\_趋势季节自相关 & 31.000 & 0.409 & 3.804 & 2.713 \\
+-hz\_horizon条件 & 32.000 & 0.500 & 3.665 & 2.851 \\
+-bb\_骨干身份 & 34.000 & 0.455 & 3.960 & 2.556 \\
+\bottomrule
+\end{tabular}
+\end{table}

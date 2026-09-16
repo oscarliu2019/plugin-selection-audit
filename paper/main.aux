@@ -1,0 +1,156 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\csgdef{mark@corau1}{1}
+\emailauthor{1367489893@qq.com}{Mianhan Liu}
+\creditauthor{Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Visualization, Writing -- original draft, Writing -- review \& editing}{Mianhan Liu}
+\creditauthor{Validation, Investigation, Writing -- review \& editing}{Chen Chen}
+\citation{revin}
+\citation{san}
+\citation{ccm}
+\citation{fredf}
+\citation{tfb,champions}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{revin}
+\citation{san}
+\citation{san}
+\citation{fredf}
+\citation{tfb,tslib,dlinear}
+\citation{champions}
+\citation{demsar}
+\citation{cesabianchi}
+\citation{arbitrage}
+\citation{gama}
+\citation{joulani}
+\citation{dlinear}
+\citation{patchtst}
+\citation{timesnet}
+\citation{itrans}
+\citation{tslib}
+\citation{revin}
+\citation{san}
+\citation{fredf}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related work and positioning}{2}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Protocol}{2}{section.3}\protected@file@percent }
+\newlabel{sec:protocol}{{3}{2}{Protocol}{section.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Grid.}{2}{section*.1}\protected@file@percent }
+\citation{demsar}
+\@writefile{toc}{\contentsline {paragraph}{Three phases.}{3}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Statistical block.}{3}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A documented \texttt  {revin} pruning.}{3}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Decision group.}{3}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Baselines.}{3}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}How the gain is reported: three significance levers}{3}{section.4}\protected@file@percent }
+\newlabel{sec:main}{{4}{3}{How the gain is reported: three significance levers}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Lever 1: which blocks enter the aggregate}{3}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Same raw runs, two aggregation conventions. Mean relative gain over \texttt  {none} (\%), Wilcoxon signed-rank $p$ raw and Holm-adjusted within the family of three arms (each convention is its own family). The significance flip is not an artifact of multiplicity: after Holm correction the complete-block convention still calls \texttt  {fredf} significant ($0.017$) while the correct pairwise convention does not ($0.76$).}}{4}{table.1}\protected@file@percent }
+\newlabel{tab:main}{{1}{4}{Same raw runs, two aggregation conventions. Mean relative gain over \arm {none} (\%), Wilcoxon signed-rank $p$ raw and Holm-adjusted within the family of three arms (each convention is its own family). The significance flip is not an artifact of multiplicity: after Holm correction the complete-block convention still calls \arm {fredf} significant ($0.017$) while the correct pairwise convention does not ($0.76$)}{table.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \texttt  {fredf} vs.\ \texttt  {none} per backbone, all pairable blocks. The sign flips and the magnitude spans $21$ points. $p_\text  {Holm}$ is adjusted within the family of four strata; the two significant cells have opposite signs.}}{4}{table.2}\protected@file@percent }
+\newlabel{tab:cond}{{2}{4}{\arm {fredf} vs.\ \arm {none} per backbone, all pairable blocks. The sign flips and the magnitude spans $21$ points. $p_\text {Holm}$ is adjusted within the family of four strata; the two significant cells have opposite signs}{table.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Lever 2: which error metric is reported}{4}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Lever 3: mean or median, and the tail that hides behind it}{4}{subsection.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Metric robustness of the plug-in verdicts.}}{5}{table.3}\protected@file@percent }
+\newlabel{tab:metric-robust}{{3}{5}{Metric robustness of the plug-in verdicts}{table.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces The choice of central estimator is a third significance lever.}}{5}{table.4}\protected@file@percent }
+\newlabel{tab:estimator-lever}{{4}{5}{The choice of central estimator is a third significance lever}{table.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}How the gain is tuned: ``plug-and-play'' is a tuning effect}{5}{section.5}\protected@file@percent }
+\newlabel{sec:tuning}{{5}{5}{How the gain is tuned: ``plug-and-play'' is a tuning effect}{section.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces The apparent benefit of a frequency-domain loss is recovered by per-cell tuning of its one hyper-parameter; at the published default the arm is harmful. $96$ blocks, three backbones (\texttt  {TimesNet} excluded).}}{6}{table.5}\protected@file@percent }
+\newlabel{tab:alpha}{{5}{6}{The apparent benefit of a frequency-domain loss is recovered by per-cell tuning of its one hyper-parameter; at the published default the arm is harmful. $96$ blocks, three backbones (\arm {TimesNet} excluded)}{table.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}How big the gain is: seed noise and compute cost}{6}{section.6}\protected@file@percent }
+\newlabel{sec:effectsize}{{6}{6}{How big the gain is: seed noise and compute cost}{section.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Against seed noise.}{6}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Against compute.}{6}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Where conditionality lives: below the block, and the one legal axis}{6}{section.7}\protected@file@percent }
+\newlabel{sec:leadtime}{{7}{6}{Where conditionality lives: below the block, and the one legal axis}{section.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Plug-in effects against seed noise and against their compute cost.}}{7}{table.6}\protected@file@percent }
+\newlabel{tab:seed-cost}{{6}{7}{Plug-in effects against seed noise and against their compute cost}{table.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Arm identity is unstable along the forecast horizon, yet the legal axis it opens is empty.}}{7}{table.7}\protected@file@percent }
+\newlabel{tab:leadtime}{{7}{7}{Arm identity is unstable along the forecast horizon, yet the legal axis it opens is empty}{table.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Lagged agreement of best-arm identity, $127$ groups. Chance $=\DOTSB \sum@ \slimits@ _k p_k^2 = 0.395$; after per-window re-labeling the measured agreement is $0.307$, matching chance. Only $\ell = H$ is causally legal.}}{8}{table.8}\protected@file@percent }
+\newlabel{tab:persist}{{8}{8}{Lagged agreement of best-arm identity, $127$ groups. Chance $=\sum _k p_k^2 = 0.395$; after per-window re-labeling the measured agreement is $0.307$, matching chance. Only $\ell = H$ is causally legal}{table.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Why per-window selection cannot work}{8}{section.8}\protected@file@percent }
+\newlabel{sec:oracle}{{8}{8}{Why per-window selection cannot work}{section.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}The per-window oracle is label-invariant}{8}{subsection.8.1}\protected@file@percent }
+\newlabel{prop:invariance}{{1}{8}{The per-window oracle is label-invariant}{proposition.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Excess-over-chance agreement of best-arm identity as a function of absolute lag, pooled over the $127$ decision groups.}}{9}{table.9}\protected@file@percent }
+\newlabel{tab:decay}{{9}{9}{Excess-over-chance agreement of best-arm identity as a function of absolute lag, pooled over the $127$ decision groups}{table.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces The decay is not an averaging artifact: three independent stratifications (backbone, dataset, horizon) give $20$ usable strata and no exception.}}{9}{table.10}\protected@file@percent }
+\newlabel{tab:strata}{{10}{9}{The decay is not an averaging artifact: three independent stratifications (backbone, dataset, horizon) give $20$ usable strata and no exception}{table.10}{}}
+\@writefile{toc}{\contentsline {paragraph}{Why the legal lag is $H$.}{9}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}How long does the signal live?}{9}{subsection.8.2}\protected@file@percent }
+\newlabel{sec:halflife}{{8.2}{9}{How long does the signal live?}{subsection.8.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Is this an average artifact?}{9}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Horizon scaling is the wrong way round.}{9}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}The headroom is real, just late}{9}{subsection.8.3}\protected@file@percent }
+\newlabel{sec:seed}{{8.3}{9}{The headroom is real, just late}{subsection.8.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {The usable correlation length never reaches the decision lag.} (a) Half-life of best-arm identity vs.\ forecast horizon, one marker per decision group ($127$; color $=$ backbone, marker $=$ dataset), log--log. The solid line is the break-even condition half-life $=H$; \emph  {no group comes within an order of magnitude of it}, and most sit below the $H/10$ dashed line. (b) The ratio half-life$/H$ per horizon: gray dots are groups, red is the median, falling from $0.19$ at $H{=}24$ to $0.021$ at $H{=}720$. The decline is monotone \emph  {within} each of the two horizon families ($24/36/48/60$ for ILI, $96/192/336/720$ for the rest); the small step up at $H{=}96$ is the change of family, not a reversal.}}{10}{figure.1}\protected@file@percent }
+\newlabel{fig:halflife}{{1}{10}{\textbf {The usable correlation length never reaches the decision lag.} (a) Half-life of best-arm identity vs.\ forecast horizon, one marker per decision group ($127$; color $=$ backbone, marker $=$ dataset), log--log. The solid line is the break-even condition half-life $=H$; \emph {no group comes within an order of magnitude of it}, and most sit below the $H/10$ dashed line. (b) The ratio half-life$/H$ per horizon: gray dots are groups, red is the median, falling from $0.19$ at $H{=}24$ to $0.021$ at $H{=}720$. The decline is monotone \emph {within} each of the two horizon families ($24/36/48/60$ for ILI, $96/192/336/720$ for the rest); the small step up at $H{=}96$ is the change of family, not a reversal}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {The same decay under three independent stratifications.} Excess-over-chance agreement of best-arm identity vs.\ absolute lag (windows), by backbone (a), dataset (b) and horizon (c). Only lags with full support across the groups in a stratum are drawn. Every curve reaches chance by lag $\approx 10^{2}$; in (c) the dotted vertical lines mark each stratum's legal decision lag $H$ (same color), and every curve has already flattened at or before its own line. No stratum is an exception.}}{10}{figure.2}\protected@file@percent }
+\newlabel{fig:decay}{{2}{10}{\textbf {The same decay under three independent stratifications.} Excess-over-chance agreement of best-arm identity vs.\ absolute lag (windows), by backbone (a), dataset (b) and horizon (c). Only lags with full support across the groups in a stratum are drawn. Every curve reaches chance by lag $\approx 10^{2}$; in (c) the dotted vertical lines mark each stratum's legal decision lag $H$ (same color), and every curve has already flattened at or before its own line. No stratum is an exception}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Three selector families, one verdict}{10}{section.9}\protected@file@percent }
+\newlabel{sec:selectors}{{9}{10}{Three selector families, one verdict}{section.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}Static complexity-feature gating}{10}{subsection.9.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces A seed-paired replication shows the per-window structure is real and largely reproducible, so the failure of every selector cannot be explained as ``there is nothing there to learn''.}}{11}{table.11}\protected@file@percent }
+\newlabel{tab:crossseed}{{11}{11}{A seed-paired replication shows the per-window structure is real and largely reproducible, so the failure of every selector cannot be explained as ``there is nothing there to learn''}{table.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Window-level gating. Gains in \% relative to the stated reference; \texttt  {bf} = \texttt  {best\_fixed\_val}. ``in-pool'' trains and applies within each group; ``LODO'' holds out a whole dataset; ``learnable'' restricts to groups with $\geq 1000$ validation windows.}}{11}{table.12}\protected@file@percent }
+\newlabel{tab:gate}{{12}{11}{Window-level gating. Gains in \% relative to the stated reference; \arm {bf} = \arm {best\_fixed\_val}. ``in-pool'' trains and applies within each group; ``LODO'' holds out a whole dataset; ``learnable'' restricts to groups with $\geq 1000$ validation windows}{table.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{Falsification controls.}{11}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Same-distribution split diagnostic.}{11}{section*.13}\protected@file@percent }
+\citation{joulani}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Same-distribution split diagnostic: gate fitted and evaluated inside one split (chronological $70/30$), removing both label optimism and val$\to $test shift. \texttt  {bf\textsubscript  {split}} is the fixed arm chosen on the fitting segment. Groups with $<200$ fitting or $<100$ evaluation windows are skipped.}}{12}{table.13}\protected@file@percent }
+\newlabel{tab:splitgate}{{13}{12}{Same-distribution split diagnostic: gate fitted and evaluated inside one split (chronological $70/30$), removing both label optimism and val$\to $test shift. \arm {bf\textsubscript {split}} is the fixed arm chosen on the fitting segment. Groups with $<200$ fitting or $<100$ evaluation windows are skipped}{table.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Online selection with legal $H$-window delay ($123$ groups). Pool sizes are nominal; realized arm counts per group are given in \S  \ref {sec:protocol}. ``delay cost'' is the no-delay advantage.}}{12}{table.14}\protected@file@percent }
+\newlabel{tab:online}{{14}{12}{Online selection with legal $H$-window delay ($123$ groups). Pool sizes are nominal; realized arm counts per group are given in \S \ref {sec:protocol}. ``delay cost'' is the no-delay advantage}{table.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}Delayed online error feedback}{12}{subsection.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Delay sweep.}{12}{section*.14}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Delay $\times $ feedback-window sweep, gains vs.\ \texttt  {bf} (\%). ``fb'' is the sliding feedback-window length. Only $\ell \geq 1H$ is causally legal.}}{13}{table.15}\protected@file@percent }
+\newlabel{tab:delaysweep}{{15}{13}{Delay $\times $ feedback-window sweep, gains vs.\ \arm {bf} (\%). ``fb'' is the sliding feedback-window length. Only $\ell \geq 1H$ is causally legal}{table.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Decomposition of the online policy's gain over \texttt  {none}. The time-varying component is negative; the whole effect is the correction of a constant mis-selection.}}{13}{table.16}\protected@file@percent }
+\newlabel{tab:decomp}{{16}{13}{Decomposition of the online policy's gain over \arm {none}. The time-varying component is negative; the whole effect is the correction of a constant mis-selection}{table.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.3}Horizon-aware checkpoint selection}{13}{subsection.9.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}What is actually recoverable}{13}{section.10}\protected@file@percent }
+\newlabel{sec:recover}{{10}{13}{What is actually recoverable}{section.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {11}A checklist for adaptive-selection claims}{13}{section.11}\protected@file@percent }
+\newlabel{sec:checklist}{{11}{13}{A checklist for adaptive-selection claims}{section.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12}Threats to validity}{14}{section.12}\protected@file@percent }
+\newlabel{sec:threats}{{12}{14}{Threats to validity}{section.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{A provenance bug we found in ourselves.}{14}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Coverage asymmetry.}{14}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Other caveats.}{14}{section*.17}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces Explicit coverage gap between the test-side audits and the gating protocols, with the audit statistics that decide learnability. $t_{1/2}/H$ is the median arm-identity half-life divided by the legal feedback delay; exc@$H$ is the mean excess above chance at delay $H$.}}{15}{table.17}\protected@file@percent }
+\newlabel{tab:coverage}{{17}{15}{Explicit coverage gap between the test-side audits and the gating protocols, with the audit statistics that decide learnability. $t_{1/2}/H$ is the median arm-identity half-life divided by the legal feedback delay; exc@$H$ is the mean excess above chance at delay $H$}{table.17}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {13}Conclusions}{15}{section.13}\protected@file@percent }
+\bibstyle{elsarticle-num}
+\bibdata{refs}
+\bibcite{revin}{{1}{}{{}}{{}}}
+\bibcite{san}{{2}{}{{}}{{}}}
+\bibcite{ccm}{{3}{}{{}}{{}}}
+\bibcite{fredf}{{4}{}{{}}{{}}}
+\bibcite{tfb}{{5}{}{{}}{{}}}
+\bibcite{champions}{{6}{}{{}}{{}}}
+\bibcite{tslib}{{7}{}{{}}{{}}}
+\bibcite{dlinear}{{8}{}{{}}{{}}}
+\bibcite{demsar}{{9}{}{{}}{{}}}
+\bibcite{cesabianchi}{{10}{}{{}}{{}}}
+\bibcite{arbitrage}{{11}{}{{}}{{}}}
+\bibcite{gama}{{12}{}{{}}{{}}}
+\bibcite{joulani}{{13}{}{{}}{{}}}
+\bibcite{patchtst}{{14}{}{{}}{{}}}
+\bibcite{timesnet}{{15}{}{{}}{{}}}
+\bibcite{itrans}{{16}{}{{}}{{}}}
+\csxdef{lastpage}{16}
+\providecommand\NAT@force@numbers{}\NAT@force@numbers
+\gdef \@abspage@last{17}

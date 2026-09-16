@@ -1,0 +1,127 @@
+{
+  "coverage": {
+    "n_groups_test_side": 127,
+    "n_groups_gating": 0,
+    "backbones_without_val_windows": [
+      "DLinear",
+      "PatchTST",
+      "TimesNet",
+      "iTransformer"
+    ],
+    "note": "门控/对照/消融需要 val 逐窗口与特征按 window_index 对齐，只在打了确定序标记的组上跑；oracle 审计/半衰期/在线延迟只用 test 侧，覆盖全部组。",
+    "mode": "reg"
+  },
+  "online": {
+    "protocol": "online_delayed_feedback",
+    "n_groups": 123,
+    "n_groups_all": 127,
+    "n_groups_insufficient": 4,
+    "feedback_window": 200,
+    "mean_gain_online_vs_none": 1.3052244785564422,
+    "mean_gain_online_vs_best_fixed": -0.8215991846223885,
+    "median_gain_online_vs_best_fixed": -0.6372855664235825,
+    "mean_gain_nodelay_vs_best_fixed": 2.8352198100086388,
+    "mean_delay_cost_pp": 3.656818994631027,
+    "mean_gain_oracle_vs_none": 11.093080989132849,
+    "mean_oracle_realized_pct": 1.2672999466313337,
+    "groups_online_beats_best_fixed_pct": 25.203252032520325,
+    "groups_online_beats_none_pct": 47.96747967479675,
+    "groups_significant_p05": 93,
+    "mean_switch_rate": 0.7487235841854925,
+    "mean_gain_bestfixed_test_vs_val": 1.549693732454615,
+    "mean_gain_online_vs_best_fixed_test": -2.47508665054053,
+    "groups_arm_id_mismatch_pct": 57.72357723577236,
+    "groups_online_beats_best_fixed_test_pct": 4.0650406504065035,
+    "verdict": "⚠️ 在线选择也输给最佳固定臂 0.82%，但『不延迟』版本能多拿 3.66 pp——说明信号存在却被 H 步延迟吃掉了。可以据此讨论「插件选择的可行性受反馈延迟约束」。",
+    "mode": "error-feedback"
+  },
+  "online_sweep": {
+    "ref_window": 200,
+    "n_groups": 103,
+    "n_groups_all": 127,
+    "n_groups_dropped_no_common_support": 24,
+    "common_support": true,
+    "aligned_eval_window": true,
+    "windows": [
+      50,
+      200,
+      1000,
+      3000,
+      1000000000
+    ],
+    "delay_ratios": [
+      0.0,
+      0.125,
+      0.25,
+      0.5,
+      1.0,
+      2.0
+    ],
+    "gain_by_delay_ratio": {
+      "0.0": 2.5361817607437773,
+      "0.125": 0.8575698715736195,
+      "0.25": 0.16083305704599415,
+      "0.5": -0.6038233789832448,
+      "1.0": -0.7459914436282942,
+      "2.0": -0.561484465683951
+    },
+    "n_valid_by_delay_ratio": {
+      "0.0": 127,
+      "0.125": 127,
+      "0.25": 127,
+      "0.5": 127,
+      "1.0": 123,
+      "2.0": 103
+    },
+    "gain_by_delay_and_window": {
+      "0.0": {
+        "50": 5.0549,
+        "200": 2.5362,
+        "1000": 1.1185,
+        "3000": 1.0292,
+        "1000000000": 0.9857
+      },
+      "0.125": {
+        "50": 2.0655,
+        "200": 0.8576,
+        "1000": 0.4436,
+        "3000": 0.595,
+        "1000000000": 0.6579
+      },
+      "0.25": {
+        "50": 0.8616,
+        "200": 0.1608,
+        "1000": 0.192,
+        "3000": 0.4188,
+        "1000000000": 0.5169
+      },
+      "0.5": {
+        "50": -0.4975,
+        "200": -0.6038,
+        "1000": -0.0047,
+        "3000": 0.2435,
+        "1000000000": 0.397
+      },
+      "1.0": {
+        "50": -1.4164,
+        "200": -0.746,
+        "1000": -0.0739,
+        "3000": 0.133,
+        "1000000000": 0.2813
+      },
+      "2.0": {
+        "50": -0.9398,
+        "200": -0.5615,
+        "1000": 0.0364,
+        "3000": 0.2629,
+        "1000000000": 0.2951
+      }
+    },
+    "breakeven_delay_ratio": 0.25,
+    "best_feedback_window": 50,
+    "feasible_gain_vs_best_fixed": -0.36438929047237056,
+    "cheat_gain_vs_best_fixed": 2.144904287534967,
+    "verdict": "⚠️ 盈亏平衡延迟只有 0.25×H：延迟 ≤0.25H 时能赢，到 1×H（唯一合法设定）就变成 -0.36%（作弊上界 +2.14%）。这是一条干净的「反馈延迟决定插件选择可行性」的定量结论，图就是这条曲线。",
+    "mode": "error-feedback"
+  }
+}

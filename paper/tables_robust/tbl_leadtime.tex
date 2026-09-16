@@ -1,0 +1,36 @@
+\begin{table}[t]
+\centering
+\caption{Arm identity is unstable along the forecast horizon, yet the legal axis it opens is empty.}\label{tab:leadtime}
+\fitwidth{%
+\begin{tabular}{lrrrr}
+\toprule
+\multicolumn{5}{l}{\emph{(a) Does one arm win across all four lead-time quarters?}} \\
+\midrule
+Stratum & Blocks & Constant argmin & Mean \# distinct & Whole-horizon winner suboptimal somewhere \\
+\midrule
+3-arm pool & 84 & 65\% & 1.43 & 35\% \\
+4-arm pool & 44 & 39\% & 1.73 & 61\% \\
+\addlinespace[2pt]
+\quad\footnotesize DLinear & 32 & 38\% & 1.72 & -- \\
+\quad\footnotesize PatchTST & 32 & 62\% & 1.44 & -- \\
+\quad\footnotesize TimesNet & 32 & 62\% & 1.44 & -- \\
+\quad\footnotesize iTransformer & 32 & 62\% & 1.53 & -- \\
+\addlinespace[4pt]
+\multicolumn{5}{l}{\emph{(b) Median relative gain (\%) by lead-time quarter}} \\
+\midrule
+Arm & Q1 (near) & Q2 & Q3 & Q4 (far) \\
+\midrule
+\texttt{revin} & +0.14 & +0.12 & -0.02 & -0.03 \\
+\texttt{san\_lite} & -5.03 & -3.49 & -2.82 & -1.83 \\
+\texttt{fredf} & -0.36 & +0.32 & +0.93 & +0.48 \\
+\addlinespace[4pt]
+\multicolumn{5}{l}{\emph{(c) Headroom of the one causally legal selection axis}} \\
+\midrule
+Reference & Mean (\%) & Median (\%) & Max (\%) & Blocks with gain \\
+\midrule
+\texttt{none} & +3.82 & +1.27 & -- & -- \\
+\textbf{best fixed arm} & $\mathbf{+0.24}$ & $\mathbf{+0.00}$ & +3.29 & 56/128 (12\% $>0.5$\,pp) \\
+\bottomrule
+\end{tabular}}
+\vspace{3pt}\parbox{\linewidth}{\footnotesize \texttt{seg}$_i$ errors partition the \emph{forecast horizon} into quarters (per-timestep MSE averaged within each quarter), not the test period; the four quarter errors average exactly to the block MSE, which is what makes panel (c) a valid decomposition. Stratifying by arm-pool size is necessary: a 4-arm block has more chances to switch than a 3-arm block, so the two strata must not be pooled. This audit covers all 128 blocks and all four backbones, including TimesNet, which the per-window analysis cannot reach. Panel (c) is the decisive one: unlike the per-window axis, the lead-time index is known at decision time, so switching arms along it needs no feedback and is causally legal --- but even its \emph{oracle} buys almost nothing over a single frozen arm.}
+\end{table}

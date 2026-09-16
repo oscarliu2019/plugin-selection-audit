@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Plug-in effects against seed noise and against their compute cost.}\label{tab:seed-cost}
+\fitwidth{%
+\begin{tabular}{lrrrrr}
+\toprule
+Arm & $N_{\text{noise}}$ & Within seed noise & Median $|\Delta|/\sigma_{\text{seed}}$ & Train-time ratio & Median gain (\%) \\
+\midrule
+\texttt{revin} & 16 & 19\% & 3.77 & 1.05$\times$ & +0.03 \\
+\texttt{san\_lite} & 64 & 27\% & 2.53 & 1.73$\times$ & -3.01 \\
+\texttt{fredf} & 64 & 31\% & 1.74 & 1.03$\times$ & +0.45 \\
+\bottomrule
+\end{tabular}}
+\vspace{3pt}\parbox{\linewidth}{\footnotesize Left half: for the 144 block--arm pairs where both the arm and \texttt{none} have $\geq 2$ seeds, the noise scale is $\sigma_{\text{seed}}=\sqrt{s^2_{\text{arm}}+s^2_{\text{none}}}$ (median $\sigma_{\text{seed}}=0.0049$ MSE). ``Within seed noise'' is the fraction of blocks whose entire plug-in effect is smaller than that scale, i.e.\ a different seed could flip its sign. Overall 28\% of block-level effects and 27\% of the wins fall in this regime. Right half: training wall-clock ratio against \texttt{none} in the same block.}
+\end{table}

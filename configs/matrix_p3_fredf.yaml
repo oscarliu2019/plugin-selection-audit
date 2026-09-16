@@ -1,0 +1,377 @@
+# 本文件由 scripts/make_fredf_config.py 从 configs/matrix.yaml 自动派生，请勿手改。
+# 用途：FreDF 公平性组（α 扫描 + √H 归一化），产物在 results/p3/ 与 artifacts/p3/。
+meta:
+  project: PlugGate
+  version: 0.1.0
+  protocol:
+    task_name: long_term_forecast
+    features: M
+    seq_len: 96
+    label_len: 48
+    train_epochs: 10
+    patience: 3
+    learning_rate: 0.0001
+    lradj: type1
+    loss: MSE
+    itr: 1
+    drop_last_test: false
+    num_workers: 4
+    inverse: false
+  deviations:
+  - id: patchtst_traffic_bs
+    what: PatchTST-Traffic 官方脚本 batch_size=4 → 本文统一改为 16
+    why: bs=4 使单格迭代数 3023，单点吃掉约一周；有/无插件一致改动，不影响公平性
+  - id: amp_on_large
+    what: Electricity / Traffic 开启 --use_amp (fp16 autocast)
+    why: V100 有 fp16 Tensor Core，无 bf16；其余数据集关闭 AMP 以保数值可比性
+  - id: fft_in_fp32_under_amp
+    what: AMP 区域内的 torch.fft.* 统一提升到 fp32 执行（src/fft_compat.py 运行期包装）
+    why: 'fp16 cuFFT 只支持 2 的幂信号长度，而 TimesNet 的 FFT_for_Period 与 FredF 频域损失
+
+      作用在 seq_len+pred_len=192/816 上，会直接 RuntimeError。FFT 只占 TimesNet 极小
+
+      计算量（主体是 Inception 2D 卷积），改 fp32 不影响吞吐，且精度严格更优。
+
+      实现为运行期包装 torch.fft，不修改 TSLib 源码。
+
+      '
+  - id: internal_norm_is_hardcoded
+    what: PatchTST / iTransformer / TimesNet 的实例归一化写死在 forecast() 里，本版 TSLib 无 use_norm
+      开关
+    why: '实测（third_party/tslib/models/iTransformer.py:51-56 等）：这三个骨干在 forecast 开头就做
+
+      「按输入窗口均值/方差归一化」、结尾逆变换。数学上，若我们在外层先做同样的实例归一化，
+
+      内层变换退化为恒等，整体等价于「只有一层 RevIN」——也就是说
+
+      **revin 挂到这三个骨干上是可证明的近似 no-op**，其 baseline 本身已内含 RevIN。
+
+      因此 revin × {PatchTST, iTransformer, TimesNet} 的格子默认被 skip_rules 剪掉，
+
+      只保留一个小的验证子集用来实证「增益 ≈ 0」这一断言（这本身是论文的一个结论，而非缺陷）。
+
+      DLinear 源码 0 处 means/stdev，是唯一「真正新增归一化」的骨干。
+
+      '
+backbones:
+- name: DLinear
+  cost_factor: 0.3
+  internal_norm: none
+  norm_switch_arg: null
+  horizon_cost_exponent: 0.2
+  hparams:
+    d_model: 512
+    d_ff: 2048
+    e_layers: 2
+    d_layers: 1
+    n_heads: 8
+    factor: 3
+  note: 源码 0 处 means/stdev → RevIN 在 DLinear 上的增益部分来自『补上它本来没有的归一化』，报告必须分层
+- name: PatchTST
+  cost_factor: 1.2
+  internal_norm: hardcoded
+  norm_switch_arg: null
+  horizon_cost_exponent: 0.5
+  hparams:
+    d_model: 128
+    d_ff: 256
+    e_layers: 1
+    d_layers: 1
+    n_heads: 4
+    factor: 3
+- name: iTransformer
+  cost_factor: 1.0
+  internal_norm: hardcoded
+  norm_switch_arg: null
+  horizon_cost_exponent: 0.5
+  hparams:
+    d_model: 512
+    d_ff: 512
+    e_layers: 3
+    d_layers: 1
+    n_heads: 8
+    factor: 3
+plugins:
+- name: none
+  kind: io
+  cost_overhead: 1.0
+  is_control: true
+  desc: 对照组：原始骨干
+- name: fredf_a01
+  impl: fredf
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.1
+  desc: FreDF 原始尺度，固定 α=0.1（α 扫描臂）
+- name: fredf_a03
+  impl: fredf
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.3
+  desc: FreDF 原始尺度，固定 α=0.3（α 扫描臂）
+- name: fredf_a07
+  impl: fredf
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.7
+  desc: FreDF 原始尺度，固定 α=0.7（α 扫描臂）
+- name: fredf_a09
+  impl: fredf
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.9
+  desc: FreDF 原始尺度，固定 α=0.9（α 扫描臂）
+- name: fredf_sqrth_a01
+  impl: fredf_sqrth
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.1
+  desc: FreDF 频域项除以 √(H//2+1) 后固定 α=0.1（尺度归一化臂）
+- name: fredf_sqrth_a05
+  impl: fredf_sqrth
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.5
+  desc: FreDF 频域项除以 √(H//2+1) 后固定 α=0.5（尺度归一化臂）
+- name: fredf_sqrth_a09
+  impl: fredf_sqrth
+  kind: loss
+  cost_overhead: 1.05
+  params:
+    alpha: 0.9
+  desc: FreDF 频域项除以 √(H//2+1) 后固定 α=0.9（尺度归一化臂）
+data_source:
+  hf_repo_id: thuml/Time-Series-Library
+  hf_repo_type: dataset
+  base_url: https://huggingface.co/datasets/thuml/Time-Series-Library/resolve/main
+datasets:
+- name: ETTh1
+  tslib_data: ETTh1
+  root_path: data/ETT-small
+  data_path: ETTh1.csv
+  hf_path: ETT-small/ETTh1.csv
+  enc_in: 7
+  total_len: 17420
+  train_len: 8640
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: ETTh2
+  tslib_data: ETTh2
+  root_path: data/ETT-small
+  data_path: ETTh2.csv
+  hf_path: ETT-small/ETTh2.csv
+  enc_in: 7
+  total_len: 17420
+  train_len: 8640
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: ETTm1
+  tslib_data: ETTm1
+  root_path: data/ETT-small
+  data_path: ETTm1.csv
+  hf_path: ETT-small/ETTm1.csv
+  enc_in: 7
+  total_len: 69680
+  train_len: 34560
+  freq: t
+  period: 96
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: mid
+  optional: false
+- name: ETTm2
+  tslib_data: ETTm2
+  root_path: data/ETT-small
+  data_path: ETTm2.csv
+  hf_path: ETT-small/ETTm2.csv
+  enc_in: 7
+  total_len: 69680
+  train_len: 34560
+  freq: t
+  period: 96
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: mid
+  optional: false
+- name: Weather
+  tslib_data: custom
+  root_path: data/weather
+  data_path: weather.csv
+  hf_path: weather/weather.csv
+  enc_in: 21
+  total_len: 52696
+  train_len: 36887
+  freq: t
+  period: 144
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: mid
+  optional: false
+- name: Electricity
+  tslib_data: custom
+  root_path: data/electricity
+  data_path: electricity.csv
+  hf_path: electricity/electricity.csv
+  enc_in: 321
+  total_len: 26304
+  train_len: 18412
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 16
+  use_amp: true
+  tier: heavy
+  optional: false
+- name: Exchange
+  tslib_data: custom
+  root_path: data/exchange_rate
+  data_path: exchange_rate.csv
+  hf_path: exchange_rate/exchange_rate.csv
+  enc_in: 8
+  total_len: 7588
+  train_len: 5311
+  freq: d
+  period: 7
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: ILI
+  tslib_data: custom
+  root_path: data/illness
+  data_path: national_illness.csv
+  hf_path: illness/national_illness.csv
+  enc_in: 7
+  total_len: 966
+  train_len: 676
+  freq: w
+  period: 52
+  seq_len: 36
+  label_len: 18
+  horizons:
+  - 24
+  - 36
+  - 48
+  - 60
+  batch_size: 32
+  use_amp: false
+  tier: cheap
+  optional: false
+- name: Traffic
+  tslib_data: custom
+  root_path: data/traffic
+  data_path: traffic.csv
+  hf_path: traffic/traffic.csv
+  enc_in: 862
+  total_len: 17544
+  train_len: 12280
+  freq: h
+  period: 24
+  seq_len: 96
+  horizons:
+  - 96
+  - 192
+  - 336
+  - 720
+  batch_size: 16
+  use_amp: true
+  tier: heavy
+  optional: true
+skip_rules: []
+seed_policy:
+  base_seeds:
+  - 2021
+  extra_seeds: []
+  tiers_with_extra_seeds: []
+  note: FreDF 公平性组只跑 seed=2021；结论靠 α 网格与 horizon 配对，不靠多 seed。
+cost_model:
+  device: V100-32GB (fp32; AMP=fp16)
+  anchor: VarDrop@RTX3090 ms/iter × 2.0 保守折算 + iTransformer@P100 全基准可跑的存在性证据
+  dataset_base_ms:
+    ETTh1: 25.0
+    ETTh2: 25.0
+    ETTm1: 25.0
+    ETTm2: 25.0
+    Weather: 40.0
+    Electricity: 82.0
+    Exchange: 20.0
+    ILI: 15.0
+    Traffic: 400.0
+  amp_speedup: 0.75
+  expected_epochs: 8.0
+  eval_overhead: 2.22
+  probe_min_iters: 30
+  safety_margin: 1.2
+paths:
+  tslib_root: third_party/tslib
+  data_root: data
+  runs_dir: runs_p3
+  cells_dir: results/p3/cells
+  results_csv: results/p3/results.csv
+  speed_csv: results/speed.csv
+  winerr_dir: results/p3/winerr
+  features_csv: artifacts/p3/features.csv
+  artifacts_dir: artifacts/p3
+deviations:
+  fredf_fairness:
+    what: α 扫描（plain [0.1, 0.3, 0.7, 0.9] / √H 归一化 [0.1, 0.5, 0.9]）× 3 个骨干 × 8 数据集
+      × 4 horizon
+    why: FreDF 官方脚本逐 (数据集,骨干) 配置 α ∈ [0.0, 0.9]，其中 ECL×PatchTST 配成 0（等于关闭）。若只报告固定
+      α=0.5 的结果，会被判定为 straw man。本组给出『调参能挽回多少』的上界，并检验 √H 归一化能否让单一 α 跨 horizon 可用。
+    how: 同 phase-2 协议（1 seed，落盘逐窗口 val/test 误差），产物写 results/p3/
+    note: 不含 TimesNet：FreDF 是损失插件，α–H 量纲问题与骨干无关；TimesNet×α=0.5 已在 phase-1 有对照。

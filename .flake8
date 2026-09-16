@@ -1,0 +1,20 @@
+[flake8]
+# Declared, enforced style for the repository. Two deliberate relaxations:
+#   E203 conflicts with the PEP 8 compliant slice spacing (a[x : y]) we use for
+#        readability in indexing-heavy numerical code;
+#   W503 forbids a line break before a binary operator, which is the layout we
+#        use for long boolean / statistical expressions.
+max-line-length = 110
+extend-ignore = E203, W503, E731
+exclude =
+    .git,
+    __pycache__,
+    third_party,
+    data,
+    runs,
+    logs,
+    results,
+    monday,
+    monday_final,
+    artifacts,
+    paper

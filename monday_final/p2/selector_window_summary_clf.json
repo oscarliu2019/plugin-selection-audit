@@ -1,0 +1,94 @@
+{
+  "coverage": {
+    "n_groups_test_side": 127,
+    "n_groups_gating": 96,
+    "backbones_without_val_windows": [
+      "TimesNet"
+    ],
+    "note": "门控/对照/消融需要 val 逐窗口与特征按 window_index 对齐，只在打了确定序标记的组上跑；oracle 审计/半衰期/在线延迟只用 test 侧，覆盖全部组。",
+    "mode": "clf"
+  },
+  "inpool_learnable": {
+    "protocol": "inpool",
+    "n_groups": 72,
+    "n_test_windows_total": 511068,
+    "mean_gain_gate_vs_none": 2.297298498532674,
+    "median_gain_gate_vs_none": -0.07248102474715054,
+    "mean_gain_bestfixed_vs_none": 3.0602520852995974,
+    "mean_gain_gate_vs_best_fixed": -0.7822048828285926,
+    "median_gain_gate_vs_best_fixed": -0.47792958020754217,
+    "groups_gate_beats_best_fixed": 16,
+    "groups_gate_beats_best_fixed_pct": 22.22222222222222,
+    "groups_significant_p05": 61,
+    "mean_gain_oracle_vs_none": 9.096428168908416,
+    "mean_switch_rate": 0.606251444293746,
+    "mean_oracle_realized_pct": -19.95623260799281,
+    "mean_gate_acc": 0.41503666780194554,
+    "mean_majority_acc": 0.4804023542842045,
+    "gate_beats_majority_pct": 9.722222222222223,
+    "wilcoxon_p_across_groups": 3.9951556490981975e-05,
+    "verdict": "⚠️ 有空间但学不到：oracle 上界 9.1%，但门控比最佳固定臂差 0.78%。空间在、可学性不足——下一步该查特征表达力与门控训练分布（val→test 漂移）。",
+    "filter": "n_val_windows >= 1000",
+    "mode": "clf"
+  },
+  "inpool": {
+    "protocol": "inpool",
+    "n_groups": 96,
+    "n_test_windows_total": 527076,
+    "mean_gain_gate_vs_none": 1.4852344371246904,
+    "median_gain_gate_vs_none": -0.12203149489205953,
+    "mean_gain_bestfixed_vs_none": 2.1212637095162266,
+    "mean_gain_gate_vs_best_fixed": -0.6518659231334312,
+    "median_gain_gate_vs_best_fixed": -0.4544150485932291,
+    "groups_gate_beats_best_fixed": 22,
+    "groups_gate_beats_best_fixed_pct": 22.916666666666668,
+    "groups_significant_p05": 72,
+    "mean_gain_oracle_vs_none": 9.740598550633646,
+    "mean_switch_rate": 0.5968318596538539,
+    "mean_oracle_realized_pct": -17.49233477857548,
+    "mean_gate_acc": 0.4204938516235848,
+    "mean_majority_acc": 0.48624402583143794,
+    "gate_beats_majority_pct": 14.583333333333334,
+    "wilcoxon_p_across_groups": 1.7765887741988217e-05,
+    "verdict": "⚠️ 有空间但学不到：oracle 上界 9.7%，但门控比最佳固定臂差 0.65%。空间在、可学性不足——下一步该查特征表达力与门控训练分布（val→test 漂移）。",
+    "by_val_windows": {
+      "<200（ILI 级，基本不可学）": {
+        "n_groups": 15,
+        "mean_gain_gate_vs_best_fixed": -0.019316433519488908,
+        "mean_gain_gate_vs_none": -0.942580568443599,
+        "mean_gain_oracle_vs_none": 8.33508986884179,
+        "mean_gate_acc": 0.51387257279505,
+        "mean_majority_acc": 0.5571384698346602,
+        "pct_beats_best_fixed": 33.33333333333333
+      },
+      "200–1000（Exchange 级）": {
+        "n_groups": 9,
+        "mean_gain_gate_vs_best_fixed": -0.6634033949287106,
+        "mean_gain_gate_vs_none": -0.9649197115253609,
+        "mean_gain_oracle_vs_none": 17.236476074088586,
+        "mean_gate_acc": 0.3085201202442573,
+        "mean_majority_acc": 0.41481999153726845,
+        "pct_beats_best_fixed": 11.11111111111111
+      },
+      "1000–5000（ETTh/Electricity 级）": {
+        "n_groups": 42,
+        "mean_gain_gate_vs_best_fixed": -0.4978064205115052,
+        "mean_gain_gate_vs_none": 2.8255782952686834,
+        "mean_gain_oracle_vs_none": 7.8599417587836165,
+        "mean_gate_acc": 0.4405275383095704,
+        "mean_majority_acc": 0.5170614777144734,
+        "pct_beats_best_fixed": 19.047619047619047
+      },
+      "≥5000（Weather/ETTm 级）": {
+        "n_groups": 30,
+        "mean_gain_gate_vs_best_fixed": -1.1803627300725148,
+        "mean_gain_gate_vs_none": 1.5577067831022606,
+        "mean_gain_oracle_vs_none": 10.827509143083132,
+        "mean_gate_acc": 0.3793494490912707,
+        "mean_majority_acc": 0.42907958148182807,
+        "pct_beats_best_fixed": 26.666666666666668
+      }
+    },
+    "mode": "clf"
+  }
+}

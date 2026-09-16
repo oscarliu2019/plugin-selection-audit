@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{配对 Wilcoxon signed-rank（块 = 数据集 × horizon × 骨干）+ Holm 校正。k=2 的比较刻意不用 Friedman/Nemenyi（后者在小 N 下功效不足）。n\_blocks = 该对方法都有结果的配对块数（逐对取，故各行可不同）；n\_eff = 去掉零差值后进入检验的对数，效应量 r = Z/$\sqrt{n\_eff}$}
+\label{tab:stats_wilcoxon}
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+method & n\_blocks & n\_eff & win & tie & loss & mean\_rel\_gain\_pct & effect\_r & p\_value & p\_holm\_adjusted & reject\_H0 \\
+\midrule
+san\_lite & 128 & 128 & 30 & 0 & 98 & -3.939 & 0.482 & 4.95e-08 & 1.485e-07 & 1 \\
+revin & 44 & 44 & 23 & 0 & 21 & 3.548 & 0.1337 & 0.3819 & 0.7638 & 0 \\
+fredf & 128 & 128 & 70 & 0 & 58 & -2.373 & 0.06853 & 0.4382 & 0.7638 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}

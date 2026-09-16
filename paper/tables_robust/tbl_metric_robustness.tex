@@ -1,0 +1,24 @@
+\begin{table}[t]
+\centering
+\caption{Metric robustness of the plug-in verdicts.}\label{tab:metric-robust}
+\fitwidth{%
+\begin{tabular}{llrccccrcl}
+\toprule
+Arm & Metric & $N$ & W/T/L & Median gain (\%) & 95\% CI & $p$ & $p_{\text{Holm}}$ & $r$ & Verdict \\
+\midrule
+\texttt{revin} & MSE & 44 & 23/0/21 & +0.03 & [-0.52, +0.84] & 0.382 & 0.764 & 0.13 & n.s. (better) \\
+ & MAE & 44 & 37/0/7 & +1.38 & [+0.43, +4.05] & $4.8\!\times\!10^{-6}$ & $1.4\!\times\!10^{-5}$ & 0.65 & \textbf{sig.} (better) \\
+\multicolumn{10}{l}{\quad\footnotesize cross-metric: Spearman $\rho=0.64$, sign agreement $64\%$, verdict \textbf{flips}} \\
+\addlinespace[2pt]
+\texttt{san\_lite} & MSE & 128 & 30/0/98 & -3.01 & [-4.35, -2.05] & $4.9\!\times\!10^{-8}$ & $1.5\!\times\!10^{-7}$ & 0.48 & \textbf{sig.} (worse) \\
+ & MAE & 128 & 44/0/84 & -1.01 & [-1.60, -0.65] & $8.7\!\times\!10^{-4}$ & 0.002 & 0.29 & \textbf{sig.} (worse) \\
+\multicolumn{10}{l}{\quad\footnotesize cross-metric: Spearman $\rho=0.84$, sign agreement $84\%$, verdict consistent} \\
+\addlinespace[2pt]
+\texttt{fredf} & MSE & 128 & 70/0/58 & +0.45 & [-0.45, +1.27] & 0.438 & 0.764 & 0.07 & n.s. (better) \\
+ & MAE & 128 & 79/0/49 & +0.90 & [+0.41, +1.57] & 0.323 & 0.323 & 0.09 & n.s. (better) \\
+\multicolumn{10}{l}{\quad\footnotesize cross-metric: Spearman $\rho=0.97$, sign agreement $93\%$, verdict consistent} \\
+\addlinespace[2pt]
+\bottomrule
+\end{tabular}}
+\vspace{3pt}\parbox{\linewidth}{\footnotesize Paired Wilcoxon signed-rank per arm against \texttt{none}; blocks are (dataset $\times$ horizon $\times$ backbone), matched pairwise so that one arm's pruning cannot shrink another arm's sample. Holm correction is applied within each metric (family size 3). CIs are percentile bootstrap over blocks ($10^4$ resamples, blocks resampled jointly to preserve pairing). Positive gain $=$ lower error than \texttt{none}.}
+\end{table}

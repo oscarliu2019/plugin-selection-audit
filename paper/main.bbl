@@ -1,0 +1,86 @@
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{revin}
+T.~Kim, J.~Kim, Y.~Tae, C.~Park, J.-H. Choi, J.~Choo, Reversible instance
+  normalization for accurate time-series forecasting against distribution
+  shift, in: International Conference on Learning Representations (ICLR), 2022.
+
+\bibitem{san}
+Z.~Liu, M.~Cheng, Z.~Li, Z.~Huang, Q.~Liu, Y.~Xie, E.~Chen, Adaptive
+  normalization for non-stationary time series forecasting: A temporal slice
+  perspective, in: Advances in Neural Information Processing Systems (NeurIPS),
+  2023.
+
+\bibitem{ccm}
+J.~Chen, J.~E. Lenssen, A.~Feng, W.~Hu, M.~Fey, L.~Tassiulas, J.~Leskovec,
+  R.~Ying, From similarity to superiority: Channel clustering for time series
+  forecasting, in: Advances in Neural Information Processing Systems (NeurIPS),
+  2024.
+
+\bibitem{fredf}
+H.~Wang, L.~Pan, Z.~Chen, D.~Yang, S.~Zhang, Y.~Yang, X.~Liu, H.~Li, D.~Tao,
+  {FreDF}: Learning to forecast in the frequency domain, in: International
+  Conference on Learning Representations (ICLR), 2025.
+
+\bibitem{tfb}
+X.~Qiu, J.~Hu, L.~Zhou, X.~Wu, J.~Du, B.~Zhang, C.~Guo, A.~Zhou, C.~S. Jensen,
+  Z.~Sheng, B.~Yang, {TFB}: Towards comprehensive and fair benchmarking of time
+  series forecasting methods, Proceedings of the VLDB Endowment 17~(9) (2024)
+  2363--2377.
+
+\bibitem{champions}
+L.~Brigato, R.~Morand, K.~J. Str{\o}mmen, M.~Panagiotou, M.~Schmidt,
+  S.~Mougiakakou, There are no champions in supervised long-term time series
+  forecasting, Transactions on Machine Learning Research (2026).
+
+\bibitem{tslib}
+Y.~Wang, H.~Wu, J.~Dong, Y.~Liu, C.~Wang, M.~Long, J.~Wang, Deep time series
+  models: A comprehensive survey and benchmark, arXiv preprint arXiv:2407.13278
+  (2024).
+
+\bibitem{dlinear}
+A.~Zeng, M.~Chen, L.~Zhang, Q.~Xu, Are transformers effective for time series
+  forecasting?, in: AAAI Conference on Artificial Intelligence, 2023.
+
+\bibitem{demsar}
+J.~Dem{\v{s}}ar, Statistical comparisons of classifiers over multiple data
+  sets, Journal of Machine Learning Research 7 (2006) 1--30.
+
+\bibitem{cesabianchi}
+N.~Cesa-Bianchi, G.~Lugosi, Prediction, Learning, and Games, Cambridge
+  University Press, 2006.
+
+\bibitem{arbitrage}
+V.~Cerqueira, L.~Torgo, F.~Pinto, C.~Soares, Arbitrage of forecasting experts,
+  Machine Learning 108~(6) (2019) 913--944.
+
+\bibitem{gama}
+J.~Gama, I.~{\v{Z}}liobait{\.e}, A.~Bifet, M.~Pechenizkiy, A.~Bouchachia, A
+  survey on concept drift adaptation, ACM Computing Surveys 46~(4) (2014)
+  44:1--44:37.
+
+\bibitem{joulani}
+P.~Joulani, A.~Gy{\"o}rgy, C.~Szepesv{\'a}ri, Online learning under delayed
+  feedback, in: International Conference on Machine Learning (ICML), 2013.
+
+\bibitem{patchtst}
+Y.~Nie, N.~H. Nguyen, P.~Sinthong, J.~Kalagnanam, A time series is worth 64
+  words: Long-term forecasting with transformers, in: International Conference
+  on Learning Representations (ICLR), 2023.
+
+\bibitem{timesnet}
+H.~Wu, T.~Hu, Y.~Liu, H.~Zhou, J.~Wang, M.~Long, {TimesNet}: Temporal
+  2d-variation modeling for general time series analysis, in: International
+  Conference on Learning Representations (ICLR), 2023.
+
+\bibitem{itrans}
+Y.~Liu, T.~Hu, H.~Zhang, H.~Wu, S.~Wang, L.~Ma, M.~Long, {iTransformer}:
+  Inverted transformers are effective for time series forecasting, in:
+  International Conference on Learning Representations (ICLR), 2024.
+
+\end{thebibliography}

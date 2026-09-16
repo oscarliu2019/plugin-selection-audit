@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{horizon-aware checkpoint 选择准则对比（零算力增量：同一批训练日志的不同读法）}
+\label{tab:horizon_criteria}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+criterion & mean\_test\_mse & mean\_rel\_gain\_vs\_baseline\_pct & win & tie & loss & mean\_gap\_to\_oracle\_pct & mean\_epoch & n\_cells \\
+\midrule
+oracle\_test & 0.926 & 0.9231 & 411 & 433 & 0 & 0 & 4.639 & 844 \\
+worst\_seg & 0.9309 & -0.03725 & 83 & 624 & 137 & 0.9604 & 4.468 & 844 \\
+rank\_agg & 0.9309 & -0.002362 & 54 & 735 & 55 & 0.9255 & 4.807 & 844 \\
+val\_mse & 0.931 & 0 & 0 & 844 & 0 & 0.9231 & 4.731 & 844 \\
+slope\_penalized & 0.9312 & -0.003762 & 59 & 693 & 92 & 0.9269 & 4.475 & 844 \\
+long\_seg & 0.9318 & -0.0737 & 84 & 608 & 152 & 0.9968 & 4.392 & 844 \\
+last & 0.9378 & -2.034 & 239 & 284 & 321 & 2.957 & 6.583 & 844 \\
+\bottomrule
+\end{tabular}
+\end{table}

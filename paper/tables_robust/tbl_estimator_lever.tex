@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{The choice of central estimator is a third significance lever.}\label{tab:estimator-lever}
+\fitwidth{%
+\begin{tabular}{llrrrrrrlr}
+\toprule
+Arm & Metric & Mean (\%) & Median (\%) & Mean$-$Med & Skew & $<\!-10\%$ & $<\!-25\%$ & Worst block & Worst (\%) \\
+\midrule
+\texttt{revin} & MSE & +3.55 & +0.03 & +3.52 & +2.19 & 2.3\% & 0.0\% & \footnotesize\texttt{Exchange/720/DLinear} & -14.1 \\
+ & MAE & +5.01 & +1.38 & +3.63 & +1.57 & 0.0\% & 0.0\% & \footnotesize\texttt{ETTh1/720/TimesNet} & -5.9 \\
+\addlinespace[2pt]
+\texttt{san\_lite} & MSE & -3.94 & -3.01 & -0.93 & +0.96 & 21.9\% & 2.3\% & \footnotesize\texttt{ILI/36/TimesNet} & -30.0 \\
+ & MAE & -1.08 & -1.01 & -0.07 & +1.12 & 7.8\% & 0.0\% & \footnotesize\texttt{ILI/60/TimesNet} & -19.4 \\
+\addlinespace[2pt]
+\texttt{fredf} & MSE & \textbf{-2.37} & \textbf{+0.45} & -2.82 & -4.47 & 10.9\% & 3.9\% & \footnotesize\texttt{Electricity/720/PatchTST} & -123.4 \\
+ & MAE & \textbf{-1.18} & \textbf{+0.90} & -2.07 & -4.60 & 6.2\% & 3.1\% & \footnotesize\texttt{Electricity/720/PatchTST} & -80.0 \\
+\addlinespace[2pt]
+\bottomrule
+\end{tabular}}
+\vspace{3pt}\parbox{\linewidth}{\footnotesize All columns are computed on the \emph{same} pairwise-matched blocks as Table~\ref{tab:metric-robust}; only the summary functional changes. Bold rows are sign conflicts, where the mean and the median disagree on whether the plug-in helps at all. ``$<\!-10\%$'' is the fraction of blocks whose error is more than $10\%$ worse than \texttt{none}. A paired Wilcoxon test targets the median, so a paper that reports a mean and tests with Wilcoxon is not testing the quantity it reports.}
+\end{table}

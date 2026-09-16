@@ -1,0 +1,37 @@
+{
+  "coverage": {
+    "n_groups_test_side": 175,
+    "n_groups_gating": 96,
+    "backbones_without_val_windows": [
+      "DLinear",
+      "PatchTST",
+      "TimesNet",
+      "iTransformer"
+    ],
+    "note": "门控/对照/消融需要 val 逐窗口与特征按 window_index 对齐，只在打了确定序标记的组上跑；oracle 审计/半衰期/在线延迟只用 test 侧，覆盖全部组。",
+    "mode": "reg"
+  },
+  "seed_audit": {
+    "protocol": "paired_seed_replicate",
+    "n_pairs": 48,
+    "seeds": [
+      2021,
+      2022
+    ],
+    "mean_argmin_agree": 0.7878317875734421,
+    "mean_chance_agree": 0.3743191448678315,
+    "mean_excess_agree": 0.41351264270561056,
+    "pairs_z_gt2": 48,
+    "mean_self_oracle_gain_pct": 7.260233384903903,
+    "mean_xseed_oracle_gain_pct": 5.739204654822707,
+    "mean_adv_corr_across_seeds": 0.7899008068107828,
+    "mean_same_arm_err_corr": 0.988752120182693,
+    "mean_seed_mse_gap_pct": 1.3263282936327199,
+    "best_fixed_arm_stable_pct": 87.5,
+    "reproducible_frac_of_headroom": 0.7904986452303518,
+    "noise_frac_of_headroom": 0.20950135476964815,
+    "pairs_xseed_beats_best_fixed": 46,
+    "verdict": "✅ 48 对成对 seed（同格子只换训练随机种子）：同 seed oracle 相对最佳固定臂 +7.26%，跨 seed oracle 只剩 +5.74%，可复现比例 79%，46/48 对跨 seed oracle 仍能赢最佳固定臂；逐窗口最优臂身份的跨 seed 一致率 0.788 vs chance 0.374。**headroom 不是训练噪声，是真实、可复现的结构**——这排除了「oracle 只是在过拟合单次训练随机性」这个平凡解释。 而且这不是平凡的：同臂逐窗口误差的跨 seed 相关只有 0.989、块级 MSE 随 seed 波动 1.33%，即模型本身确实变了，但「哪个窗口该用哪个插件」依然稳定。于是结论从『没东西可学』升级为更精确的一句：**信号是真的，但它来得太晚**——结合最优臂身份的相关半衰期只有几个窗口、而部署要求提前 H 步决策，真实存在的 headroom 在因果约束下依然不可达。",
+    "mode": "paired-seed-replicate"
+  }
+}

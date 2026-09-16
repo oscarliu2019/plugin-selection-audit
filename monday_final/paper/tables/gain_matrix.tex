@@ -1,0 +1,44 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{增益矩阵：各插件相对无插件基线的平均相对 MSE 降低 %（负值 = 挂上反而更差，本文的核心观察正是这些负格子）}
+\label{tab:gain_matrix}
+\begin{tabular}{lrrr}
+\toprule
+ & fredf & revin & san\_lite \\
+\midrule
+DLinear ETTh1 & +0.82 & +1.12 & -1.42 \\
+DLinear ETTh2 & +14.32 & +28.54 & +27.61 \\
+DLinear ETTm1 & +0.31 & -2.40 & -19.21 \\
+DLinear ETTm2 & +12.98 & +16.67 & +14.69 \\
+DLinear Electricity & +1.25 & -2.40 & -10.84 \\
+DLinear Exchange & +6.55 & -0.91 & -9.43 \\
+DLinear ILI & -0.72 & +1.50 & -9.83 \\
+DLinear Weather & +0.97 & -2.33 & -4.46 \\
+PatchTST ETTh1 & -7.15 & +0.98 & -0.96 \\
+PatchTST ETTh2 & -0.13 & -- & +0.03 \\
+PatchTST ETTm1 & -22.24 & -- & -12.69 \\
+PatchTST ETTm2 & -4.76 & -- & -2.81 \\
+PatchTST Electricity & -77.98 & -- & -8.60 \\
+PatchTST Exchange & -13.97 & -- & -2.96 \\
+PatchTST ILI & -3.35 & -- & -19.56 \\
+PatchTST Weather & -3.45 & +0.00 & -0.70 \\
+TimesNet ETTh1 & +8.50 & -3.88 & -3.36 \\
+TimesNet ETTh2 & +6.51 & -- & +2.83 \\
+TimesNet ETTm1 & +2.03 & -- & +2.12 \\
+TimesNet ETTm2 & +6.45 & -- & +1.71 \\
+TimesNet Electricity & -12.90 & -- & -7.86 \\
+TimesNet Exchange & +2.38 & -- & +3.51 \\
+TimesNet ILI & -3.37 & -- & -27.82 \\
+TimesNet Weather & +1.65 & +2.83 & -0.73 \\
+iTransformer ETTh1 & +4.21 & -1.59 & -2.63 \\
+iTransformer ETTh2 & +4.44 & -- & -2.94 \\
+iTransformer ETTm1 & +4.22 & -- & -3.62 \\
+iTransformer ETTm2 & +3.31 & -- & -2.00 \\
+iTransformer Electricity & -4.09 & -- & -6.91 \\
+iTransformer Exchange & +0.72 & -- & -3.89 \\
+iTransformer ILI & -4.20 & -- & -13.00 \\
+iTransformer Weather & +0.74 & +0.14 & -0.32 \\
+\bottomrule
+\end{tabular}
+\end{table}

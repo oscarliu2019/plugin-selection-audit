@@ -1,0 +1,44 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{DLinear 上各插件的测试 MSE（行内最优加粗，**仅对所有插件均有结果的行**加粗；含 -- 的行不加粗，因为可用列不可比；所有 baseline 均由本文在统一协议 drop\_last=False 下重跑）}
+\label{tab:main_dlinear}
+\begin{tabular}{lrrrr}
+\toprule
+ & fredf & none & revin & san\_lite \\
+\midrule
+ETTh1 96 & \textbf{0.391} & 0.396 & 0.399 & 0.411 \\
+ETTh1 192 & \textbf{0.443} & 0.447 & 0.449 & 0.461 \\
+ETTh1 336 & \textbf{0.486} & 0.488 & 0.489 & 0.503 \\
+ETTh1 720 & 0.511 & 0.514 & \textbf{0.484} & 0.491 \\
+ETTh2 96 & 0.305 & 0.345 & \textbf{0.294} & 0.301 \\
+ETTh2 192 & 0.409 & 0.478 & \textbf{0.379} & 0.384 \\
+ETTh2 336 & 0.501 & 0.592 & \textbf{0.417} & 0.421 \\
+ETTh2 720 & 0.696 & 0.828 & \textbf{0.420} & 0.421 \\
+ETTm1 96 & \textbf{0.342} & 0.346 & 0.354 & 0.426 \\
+ETTm1 192 & 0.383 & \textbf{0.382} & 0.391 & 0.461 \\
+ETTm1 336 & \textbf{0.414} & 0.415 & 0.424 & 0.492 \\
+ETTm1 720 & \textbf{0.473} & 0.473 & 0.487 & 0.541 \\
+ETTm2 96 & 0.183 & 0.193 & \textbf{0.182} & 0.190 \\
+ETTm2 192 & 0.251 & 0.285 & \textbf{0.246} & 0.252 \\
+ETTm2 336 & 0.324 & 0.385 & \textbf{0.306} & 0.311 \\
+ETTm2 720 & 0.450 & 0.556 & \textbf{0.407} & 0.410 \\
+Electricity 96 & \textbf{0.197} & 0.200 & 0.203 & 0.224 \\
+Electricity 192 & \textbf{0.196} & 0.199 & 0.203 & 0.219 \\
+Electricity 336 & \textbf{0.210} & 0.213 & 0.217 & 0.234 \\
+Electricity 720 & \textbf{0.246} & 0.248 & 0.259 & 0.275 \\
+Exchange 96 & 0.102 & 0.096 & \textbf{0.089} & 0.104 \\
+Exchange 192 & 0.183 & 0.186 & \textbf{0.179} & 0.198 \\
+Exchange 336 & \textbf{0.304} & 0.323 & 0.324 & 0.346 \\
+Exchange 720 & \textbf{0.574} & 0.765 & 0.873 & 0.882 \\
+ILI 24 & 4.781 & \textbf{4.775} & 4.807 & 5.262 \\
+ILI 36 & 4.410 & 4.396 & \textbf{4.393} & 5.060 \\
+ILI 48 & 4.153 & 4.097 & \textbf{4.001} & 4.608 \\
+ILI 60 & 4.223 & 4.178 & \textbf{4.000} & 4.243 \\
+Weather 96 & \textbf{0.195} & 0.196 & 0.196 & 0.201 \\
+Weather 192 & \textbf{0.234} & 0.239 & 0.240 & 0.245 \\
+Weather 336 & \textbf{0.280} & 0.283 & 0.292 & 0.297 \\
+Weather 720 & \textbf{0.343} & 0.345 & 0.364 & 0.370 \\
+\bottomrule
+\end{tabular}
+\end{table}

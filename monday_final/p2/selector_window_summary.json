@@ -1,0 +1,321 @@
+{
+  "coverage": {
+    "n_groups_test_side": 127,
+    "n_groups_gating": 96,
+    "backbones_without_val_windows": [
+      "TimesNet"
+    ],
+    "note": "门控/对照/消融需要 val 逐窗口与特征按 window_index 对齐，只在打了确定序标记的组上跑；oracle 审计/半衰期/在线延迟只用 test 侧，覆盖全部组。",
+    "mode": "reg"
+  },
+  "inpool_learnable": {
+    "protocol": "inpool",
+    "n_groups": 72,
+    "n_test_windows_total": 511068,
+    "mean_gain_gate_vs_none": 2.4572930718096653,
+    "median_gain_gate_vs_none": -0.05703458944684613,
+    "mean_gain_bestfixed_vs_none": 3.0602520852995974,
+    "mean_gain_gate_vs_best_fixed": -0.6575903452700458,
+    "median_gain_gate_vs_best_fixed": -0.6322775726528069,
+    "groups_gate_beats_best_fixed": 17,
+    "groups_gate_beats_best_fixed_pct": 23.61111111111111,
+    "groups_significant_p05": 60,
+    "mean_gain_oracle_vs_none": 9.096428168908416,
+    "mean_switch_rate": 0.5922097180789199,
+    "mean_oracle_realized_pct": -10.706634135612202,
+    "mean_gate_acc": 0.4141186429537655,
+    "mean_majority_acc": 0.4804023542842045,
+    "gate_beats_majority_pct": 13.88888888888889,
+    "wilcoxon_p_across_groups": 3.206740727172216e-05,
+    "verdict": "⚠️ 有空间但学不到：oracle 上界 9.1%，但门控比最佳固定臂差 0.66%。空间在、可学性不足——下一步该查特征表达力与门控训练分布（val→test 漂移）。",
+    "filter": "n_val_windows >= 1000",
+    "mode": "reg"
+  },
+  "inpool": {
+    "protocol": "inpool",
+    "n_groups": 96,
+    "n_test_windows_total": 527076,
+    "mean_gain_gate_vs_none": 1.4983117029091781,
+    "median_gain_gate_vs_none": -0.08032449398950872,
+    "mean_gain_bestfixed_vs_none": 2.1212637095162266,
+    "mean_gain_gate_vs_best_fixed": -0.6678785328408386,
+    "median_gain_gate_vs_best_fixed": -0.5855202482343997,
+    "groups_gate_beats_best_fixed": 21,
+    "groups_gate_beats_best_fixed_pct": 21.875,
+    "groups_significant_p05": 72,
+    "mean_gain_oracle_vs_none": 9.740598550633646,
+    "mean_switch_rate": 0.5874866772122695,
+    "mean_oracle_realized_pct": -11.502126742456142,
+    "mean_gate_acc": 0.41607363288930505,
+    "mean_majority_acc": 0.48624402583143794,
+    "gate_beats_majority_pct": 13.541666666666666,
+    "wilcoxon_p_across_groups": 3.0690466236127136e-06,
+    "verdict": "⚠️ 有空间但学不到：oracle 上界 9.7%，但门控比最佳固定臂差 0.67%。空间在、可学性不足——下一步该查特征表达力与门控训练分布（val→test 漂移）。",
+    "by_val_windows": {
+      "<200（ILI 级，基本不可学）": {
+        "n_groups": 15,
+        "mean_gain_gate_vs_best_fixed": -0.4647933173562976,
+        "mean_gain_gate_vs_none": -1.3856659676383931,
+        "mean_gain_oracle_vs_none": 8.33508986884179,
+        "mean_gate_acc": 0.48375555433710826,
+        "mean_majority_acc": 0.5571384698346602,
+        "pct_beats_best_fixed": 13.333333333333334
+      },
+      "200–1000（Exchange 级）": {
+        "n_groups": 9,
+        "mean_gain_gate_vs_best_fixed": -1.0886593925480843,
+        "mean_gain_gate_vs_none": -1.3669097973820998,
+        "mean_gain_oracle_vs_none": 17.236476074088586,
+        "mean_gate_acc": 0.3189103499606162,
+        "mean_majority_acc": 0.41481999153726845,
+        "pct_beats_best_fixed": 22.22222222222222
+      },
+      "1000–5000（ETTh/Electricity 级）": {
+        "n_groups": 42,
+        "mean_gain_gate_vs_best_fixed": -0.6027024466579651,
+        "mean_gain_gate_vs_none": 2.789787897291769,
+        "mean_gain_oracle_vs_none": 7.8599417587836165,
+        "mean_gate_acc": 0.4395304892025023,
+        "mean_majority_acc": 0.5170614777144734,
+        "pct_beats_best_fixed": 21.428571428571427
+      },
+      "≥5000（Weather/ETTm 级）": {
+        "n_groups": 30,
+        "mean_gain_gate_vs_best_fixed": -0.7344334033269585,
+        "mean_gain_gate_vs_none": 1.99180031613472,
+        "mean_gain_oracle_vs_none": 10.827509143083132,
+        "mean_gate_acc": 0.37854205820553405,
+        "mean_majority_acc": 0.42907958148182807,
+        "pct_beats_best_fixed": 26.666666666666668
+      }
+    },
+    "mode": "reg"
+  },
+  "inpool_controls": {
+    "n_groups": 96,
+    "mean_gain_random_vs_best_fixed": -1.0355073516193303,
+    "mean_gain_shuffled_vs_best_fixed": -0.5360260576516459,
+    "mean_gate_minus_random": 0.3598581068142878,
+    "mean_gate_minus_shuffled": -0.21912532127576112,
+    "groups_gate_beats_random_pct": 65.625,
+    "groups_gate_beats_shuffled_pct": 26.041666666666668,
+    "verdict": "🟡 门控相对两个对照的净优势有限（random +0.36%，shuffled -0.22%），窗口级信息的贡献还不够硬，不要把它写成主张。",
+    "mode": "reg"
+  },
+  "inpool_ablation": {
+    "n_groups": 96,
+    "mean_gain_full": -0.6678785328408386,
+    "mean_delta_when_dropped": {
+      "w_pc": 0.12869545022976858,
+      "w_ns": -0.006279936534151635,
+      "w_fr": 0.02985661757594164,
+      "w_sd": 0.017518288177596947,
+      "w_ch": 0.020934200462579405
+    },
+    "most_important_group": "w_ns",
+    "mode": "reg"
+  },
+  "oracle_audit": {
+    "protocol": "argmin_identity_persistence",
+    "n_groups": 127,
+    "mean_oracle_gain_real_pct": 10.145518283346268,
+    "oracle_invariant_under_relabel_all": true,
+    "mean_win_rate_top": 0.48824898729422433,
+    "mean_win_rate_entropy": 0.8753071227016403,
+    "mean_chance_persist": 0.3950587885336469,
+    "mean_persist_lag1_relabelled": 0.3067219311457381,
+    "mean_persist_half_life_windows": 11.319133717084881,
+    "median_persist_half_life_windows": 9.043336645269173,
+    "mean_half_life_over_H": 0.06052217078698202,
+    "excess_decay_curve": {
+      "1": 0.46882074919009303,
+      "2": 0.40363675020515344,
+      "4": 0.320544819143633,
+      "8": 0.2388059889172272,
+      "16": 0.1630087274256616,
+      "32": 0.09204353743890713,
+      "64": 0.040939812469087365,
+      "128": -0.006530578510571498,
+      "256": -0.007711384659355868,
+      "512": 0.004623879780750055,
+      "1024": 0.005464520744592497
+    },
+    "mean_persist_lag1": 0.8638795377237402,
+    "mean_excess_persist_lag1": 0.46882074919009303,
+    "groups_z_gt2_lag1": 127,
+    "mean_persist_lagH_4": 0.46734468040057975,
+    "mean_excess_persist_lagH_4": 0.07228589186693272,
+    "groups_z_gt2_lagH_4": 93,
+    "mean_persist_lagH_2": 0.4149325104047095,
+    "mean_excess_persist_lagH_2": 0.019873721871062584,
+    "groups_z_gt2_lagH_2": 72,
+    "mean_persist_lagH": 0.38855079214698685,
+    "mean_excess_persist_lagH": -0.006507996386660136,
+    "groups_z_gt2_lagH": 37,
+    "mean_persist_lag2H": 0.3965133882049179,
+    "mean_excess_persist_lag2H": 0.0023447911639511245,
+    "groups_z_gt2_lag2H": 41,
+    "verdict": "⚠️ oracle 上界 10.15% 在逐窗口重贴臂标签下**完全不变**（127 组全部验证通过），因此它不能作为可学性的证据。 最优臂身份只有**极短程**可预测性：lag1 超出 chance +0.469，但到合法延迟 H 就只剩 -0.007（chance=0.395，37/127 组 z>2）。身份相关性的半衰期中位数只有 9.0 个窗口，约为预测视界 H 的 6.1%。结论：**可利用的相关长度比预测视界短一到两个数量级**，因此任何因果选择器都拿不到那 10.1% 的上界。这是一条定量、可复现、且能解释全部负结果的核心结论。",
+    "mode": "permutation-null"
+  },
+  "audit_strata": {
+    "protocol": "audit_strata",
+    "n_strata": 20,
+    "n_strata_underpowered": 0,
+    "strata_keys": [
+      "backbone",
+      "dataset",
+      "pred_len"
+    ],
+    "strata_with_half_life_over_H_below_25pct": 20,
+    "strata_total_used": 20,
+    "strata_with_excess_lagH_above_005": 0,
+    "max_median_half_life_over_H": 0.1920866158869714,
+    "max_median_half_life_over_H_stratum": "pred_len=24",
+    "max_excess_persist_lagH": 0.03155002741487724,
+    "max_excess_persist_lagH_stratum": "dataset=Exchange",
+    "median_half_life_windows_range": [
+      2.9921982583412023,
+      15.303626244668749
+    ],
+    "horizon_hl_spearman": 0.7380952380952381,
+    "horizon_ratio_spearman": -0.8809523809523809,
+    "hl_at_min_H": 4.610078781287314,
+    "hl_at_max_H": 15.303626244668749,
+    "H_min": 24.0,
+    "H_max": 720.0,
+    "verdict": "✅ 分层检验（20 个可用层，按 backbone / dataset / horizon 三种切法）：半衰期中位数落在 3.0~15.3 个窗口之间，20/20 层的「半衰期/H」低于 25%。 **没有任何一层**在合法延迟 H 下超出 chance 0.05 以上（最像有信号的那层是 dataset=Exchange，也只有 +0.032）；相关长度相对 H 最长的那层是 pred_len=24（19.2%）。结论在每一层都成立，不是被某个数据集或骨干拖出来的平均值。 horizon 依赖：半衰期的绝对值随 H 的 Spearman 秩相关 +0.74（H=24 时 4.6 个窗口，H=720 时 15.3 个窗口），而「半衰期/H」随 H 的秩相关 -0.88——半衰期的**绝对值随 H 增长**（H 放大 30.0×，半衰期只放大 3.3×），即增长慢于 H 本身，因此「半衰期/H」随 H 下降：H 越大越无望。",
+    "mode": "reg"
+  },
+  "online": {
+    "protocol": "online_delayed_feedback",
+    "n_groups": 123,
+    "n_groups_all": 127,
+    "n_groups_insufficient": 4,
+    "feedback_window": 200,
+    "mean_gain_online_vs_none": 1.1885244474965375,
+    "mean_gain_online_vs_best_fixed": -0.869912519186263,
+    "median_gain_online_vs_best_fixed": -0.5209332377843132,
+    "mean_gain_nodelay_vs_best_fixed": 2.4713151579784256,
+    "mean_delay_cost_pp": 3.3412276771646887,
+    "mean_gain_oracle_vs_none": 10.124825111213282,
+    "mean_oracle_realized_pct": 0.3017992646806144,
+    "groups_online_beats_best_fixed_pct": 20.32520325203252,
+    "groups_online_beats_none_pct": 43.90243902439025,
+    "groups_significant_p05": 89,
+    "mean_switch_rate": 0.603887573230198,
+    "mean_gain_bestfixed_test_vs_val": 1.3582213310252687,
+    "mean_gain_online_vs_best_fixed_test": -2.3203914770977816,
+    "groups_arm_id_mismatch_pct": 34.146341463414636,
+    "groups_online_beats_best_fixed_test_pct": 4.878048780487805,
+    "verdict": "⚠️ 在线选择也输给最佳固定臂 0.87%，但『不延迟』版本能多拿 3.34 pp——说明信号存在却被 H 步延迟吃掉了。可以据此讨论「插件选择的可行性受反馈延迟约束」。",
+    "mode": "error-feedback"
+  },
+  "online_sweep": {
+    "ref_window": 200,
+    "n_groups": 103,
+    "n_groups_all": 127,
+    "n_groups_dropped_no_common_support": 24,
+    "common_support": true,
+    "aligned_eval_window": true,
+    "windows": [
+      50,
+      200,
+      1000,
+      3000,
+      1000000000
+    ],
+    "delay_ratios": [
+      0.0,
+      0.125,
+      0.25,
+      0.5,
+      1.0,
+      2.0
+    ],
+    "gain_by_delay_ratio": {
+      "0.0": 2.1851911574498377,
+      "0.125": 0.6981422950544767,
+      "0.25": 0.06903602374272583,
+      "0.5": -0.6357857880327052,
+      "1.0": -0.7699769481180639,
+      "2.0": -0.6128842988819261
+    },
+    "n_valid_by_delay_ratio": {
+      "0.0": 127,
+      "0.125": 127,
+      "0.25": 127,
+      "0.5": 127,
+      "1.0": 123,
+      "2.0": 103
+    },
+    "gain_by_delay_and_window": {
+      "0.0": {
+        "50": 4.5885,
+        "200": 2.1852,
+        "1000": 0.9611,
+        "3000": 0.8755,
+        "1000000000": 0.8462
+      },
+      "0.125": {
+        "50": 1.9398,
+        "200": 0.6981,
+        "1000": 0.4569,
+        "3000": 0.5815,
+        "1000000000": 0.6066
+      },
+      "0.25": {
+        "50": 0.8266,
+        "200": 0.069,
+        "1000": 0.2238,
+        "3000": 0.4333,
+        "1000000000": 0.4794
+      },
+      "0.5": {
+        "50": -0.4859,
+        "200": -0.6358,
+        "1000": 0.0098,
+        "3000": 0.3201,
+        "1000000000": 0.3921
+      },
+      "1.0": {
+        "50": -1.3594,
+        "200": -0.77,
+        "1000": -0.1307,
+        "3000": 0.1189,
+        "1000000000": 0.2228
+      },
+      "2.0": {
+        "50": -0.9192,
+        "200": -0.6129,
+        "1000": -0.0147,
+        "3000": 0.2181,
+        "1000000000": 0.2502
+      }
+    },
+    "breakeven_delay_ratio": 0.25,
+    "best_feedback_window": 50,
+    "feasible_gain_vs_best_fixed": -0.3836733845883366,
+    "cheat_gain_vs_best_fixed": 1.8913171254897647,
+    "verdict": "⚠️ 盈亏平衡延迟只有 0.25×H：延迟 ≤0.25H 时能赢，到 1×H（唯一合法设定）就变成 -0.38%（作弊上界 +1.89%）。这是一条干净的「反馈延迟决定插件选择可行性」的定量结论，图就是这条曲线。",
+    "mode": "error-feedback"
+  },
+  "lodo": {
+    "protocol": "lodo",
+    "n_groups": 76,
+    "n_test_windows_total": 0,
+    "mean_gain_gate_vs_none": 1.2319596826270627,
+    "median_gain_gate_vs_none": -0.22426715449661444,
+    "mean_gain_bestfixed_vs_none": NaN,
+    "mean_gain_gate_vs_best_fixed": -1.559035170429579,
+    "median_gain_gate_vs_best_fixed": -0.9328293402415577,
+    "groups_gate_beats_best_fixed": 17,
+    "groups_gate_beats_best_fixed_pct": 22.36842105263158,
+    "groups_significant_p05": 65,
+    "mean_gain_oracle_vs_none": 10.464308181539131,
+    "mean_switch_rate": 0.4655826966283544,
+    "wilcoxon_p_across_groups": 3.0124067220604534e-06,
+    "verdict": "⚠️ 有空间但学不到：oracle 上界 10.5%，但门控比最佳固定臂差 1.56%。空间在、可学性不足——下一步该查特征表达力与门控训练分布（val→test 漂移）。",
+    "mode": "reg"
+  }
+}
