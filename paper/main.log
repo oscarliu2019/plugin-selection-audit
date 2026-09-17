@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2026.9.16)  17 SEP 2026 15:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2026.9.16)  17 SEP 2026 16:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -720,7 +720,7 @@ Package pdftex.def Info: figs/fig_decay_curves.pdf  used on input line 729.
 (pdftex.def)             Requested size: 468.3324pt x 128.382pt.
  [9] [10 <./figs/fig_halflife_vs_horizon.pdf> <./figs/fig_decay_curves.pdf>] [1
 1] [12] [13] [14] [15]
-Overfull \hbox (11.35738pt too wide) in paragraph at lines 1201--1206
+Overfull \hbox (11.35738pt too wide) in paragraph at lines 1202--1207
 \T1/cmtt/m/n/10 oscarliu2019 / plugin-[]selection-[]audit$[][]\T1/cmr/m/n/10 , 
 visit \T1/cmtt/m/n/10 swh:1:snp:cd0b09f87d11cd06b53af22f6b0439fd8687a009\T1/cmr
 /m/n/10 ). 
