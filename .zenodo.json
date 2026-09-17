@@ -1,0 +1,34 @@
+{
+  "title": "plugin-selection-audit: artefacts and verification pipeline for “Per-window oracle headroom is not learnable”",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Liu, Mianhan",
+      "orcid": "0009-0000-0274-1062",
+      "affiliation": "Independent Researcher, Shanghai, China"
+    },
+    {
+      "name": "Chen, Chen",
+      "orcid": "0009-0001-1991-9370",
+      "affiliation": "Independent Researcher, Shanghai, China"
+    }
+  ],
+  "description": "<p>Complete replication package for the manuscript <em>Per-window oracle headroom is not learnable: a feedback-delay audit of plug-in selection for time series forecasting</em>.</p><p>Contents: the training grid and per-run artefacts; per-window oracle-headroom decompositions; the feedback-delay (lead-time) audit; the robustness sweeps over metric, aggregation and block-filtering choices; the selector implementations and their evaluation; and a test suite covering the analysis code. <code>tools/verify_paper_numbers.py</code> re-derives all 204 quantitative claims of the manuscript from the released artefacts and fails on any mismatch.</p>",
+  "keywords": [
+    "time series forecasting",
+    "model selection",
+    "oracle headroom",
+    "feedback delay",
+    "reproducibility",
+    "negative results",
+    "empirical evaluation"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/oscarliu2019/plugin-selection-audit",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

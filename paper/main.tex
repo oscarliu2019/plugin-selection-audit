@@ -39,11 +39,8 @@
 \begingroup
 \catcode`\_=12
 \gdef\correspemail{1367489893@qq.com}
+\gdef\secondemail{1577027526@qq.com}
 \endgroup
-
-% No ORCID is registered for this submission; suppress the empty "ORCID(s):"
-% footnote that cas-sc emits unconditionally on the title page.
-\AtBeginDocument{\renewcommand{\printorcid}{}}
 
 \begin{document}
 \let\WriteBookmarks\relax
@@ -56,17 +53,20 @@
 \title[mode = title]{Per-window oracle headroom is not learnable:
 a feedback-delay audit of plug-in selection for time series forecasting}
 
-\author[1]{Mianhan Liu}
+\author[1]{Mianhan Liu}[orcid=0009-0000-0274-1062]
 \cormark[1]
 \expandafter\ead\expandafter{\correspemail}
 \credit{Conceptualization, Methodology, Software, Formal analysis,
 Investigation, Data curation, Visualization,
 Writing -- original draft, Writing -- review \& editing}
 
-\author[1]{Chen Chen}
+\author[1]{Chen Chen}[orcid=0009-0001-1991-9370]
+\expandafter\ead\expandafter{\secondemail}
 \credit{Validation, Investigation, Writing -- review \& editing}
 
-\affiliation[1]{city={Shanghai},
+\affiliation[1]{organization={Independent Researcher},
+                city={Shanghai},
+                postcode={200000},
                 country={China}}
 
 \cortext[1]{Corresponding author.}
