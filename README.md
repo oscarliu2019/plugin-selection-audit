@@ -1,5 +1,7 @@
 # PlugGate — reproduction package
 
+Archived in Software Heritage: `swh:1:rev:ec90998cd56de249ab48eb381934a93a82d3e12a` (visit `swh:1:snp:cd0b09f87d11cd06b53af22f6b0439fd8687a009`).
+
 Repository: <https://github.com/oscarliu2019/plugin-selection-audit>
 
 This repository is the public, self-contained reproduction package for the manuscript
