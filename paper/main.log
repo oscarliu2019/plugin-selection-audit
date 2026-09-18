@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2026.9.16)  18 SEP 2026 22:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2026.9.16)  19 SEP 2026 04:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -737,7 +737,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 1520--1524
 u2019 / plugin-[]selection-[]audit$[][]\T1/cmr/m/n/10 , visit
  []
 
-(./main.bbl [20]) [21] (./main.aux)
+(./main.bbl
+Underfull \hbox (badness 1616) in paragraph at lines 87--91
+[]\T1/cmr/m/n/8 M. Liu, C. Chen, Silent or-der cor-rup-tion in per-sample eval-
+u-a-tion arte-facts: con-trol de-gen-er-a-tion, di-ag-nos-tic
+ []
+
+[20]) [21] (./main.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.5pt have occurred.
@@ -802,7 +808,7 @@ ist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
 c/amsfonts/symbols/msbm10.pfb>
-Output written on main.pdf (22 pages, 624189 bytes).
+Output written on main.pdf (22 pages, 624190 bytes).
 PDF statistics:
  1622 PDF objects out of 1728 (max. 8388607)
  516 compressed objects within 6 object streams
