@@ -2,26 +2,16 @@ Model-agnostic ``plug-and-play'' modules for time series forecasting---instance
 normalization, non-stationarity correction, frequency-domain losses---are reported
 as helpful, yet their gain flips sign across backbones. The natural response is to
 learn \emph{when} to attach \emph{which} module. In $2{,}035$ single-GPU training
-runs across four backbones, eight datasets and four horizons, we audit that
-response and find no deployable gain, for reasons we can measure. First,
-the reported effect is smaller than three near-universal reporting choices:
-complete-block filtering, the error metric, and mean versus median. Each flips at
-least one verdict. Second, the per-window oracle that motivates gating is provably
-invariant to re-labeling which arm produced which error, so its $+10.15\%$
-headroom is no evidence of learnability; a seed-paired replication nevertheless
-shows the structure is real, with $79\%$ surviving a seed change on the $48$ of
-$127$ groups where we could replicate, though that figure ranges from $99.1\%$ to
-$48.7\%$ across backbones. Third, the
-decisive quantity is the correlation length of best-arm identity: its median
-half-life is $5.1\%$ of the forecast horizon, whereas deployment forces a decision
-lag of at least one horizon. Three selector families accordingly lose to the arm
-frozen on validation---by $0.87$ points online and $0.67$ points when gated, with
-absolute error worse in $64\%$ and $71\%$ of groups respectively---and a
-quarter-wise lead-time oracle, on the one axis that carries no feedback delay,
-yields only $+0.24\%$. Because the eight datasets, not the $123$ decision groups,
-are the units that a generalization claim rests on, we report every headline
-effect with a dataset-cluster bootstrap and a leave-one-dataset-out sweep: the
-oracle headroom and the gating loss survive both, while the online loss does not
-exclude zero at the dataset level ($95\%$ CI $[-1.75, +0.07]$). Within these
-protocols, only a constant mis-selection was recoverable. We distill the audit
-into a checklist for adaptive-selection claims.
+runs across four backbones, eight datasets and four horizons, three selector
+families did not convert that promise into a deployable gain. First, the effect is
+smaller than three routine reporting choices---complete-block filtering, the error
+metric, and mean versus median---each of which flips a verdict. Second, the
+per-window oracle motivating gating is provably invariant to re-labeling which arm
+produced which error, so its $+10.15\%$ headroom is no evidence of learnability,
+although $79\%$ of it survives a seed change. Third, best-arm identity has a median
+correlation half-life of $5.1\%$ of the horizon, whereas deployment forces a
+decision lag of at least one horizon. The selectors lose to the arm frozen on
+validation, by $0.87$ and $0.67$ points, and are absolutely worse in most groups.
+With the eight datasets as the unit of generalization, the gating loss survives
+clustering while the online loss no longer excludes zero. Only a constant
+mis-selection was recoverable; we distill the audit into a checklist.
