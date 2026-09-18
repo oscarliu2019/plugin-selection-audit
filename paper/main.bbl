@@ -83,4 +83,10 @@ Y.~Liu, T.~Hu, H.~Zhang, H.~Wu, S.~Wang, L.~Ma, M.~Long, {iTransformer}:
   Inverted transformers are effective for time series forecasting, in:
   International Conference on Learning Representations (ICLR), 2024.
 
+\bibitem{companion2026b}
+M.~Liu, C.~Chen, Silent order corruption in per-sample evaluation artefacts:
+  why the standard negative control cannot detect it, and two tests that can,
+  Companion manuscript; artefacts at
+  \url{https://github.com/oscarliu2019/order-provenance-audit} (2026).
+
 \end{thebibliography}
