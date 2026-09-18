@@ -633,6 +633,21 @@ enormously predictable ($+0.469$ over chance, every single group significant).
 At the only lag a deployed system may use it is \emph{at chance}
 ($-0.007$). The signal exists; it expires before it can be acted on.
 
+\paragraph{The per-group $z$ column is a dispersion diagnostic, not an inference.}
+The $z>2$ counts use the i.i.d.\ binomial reference
+$z=(\widehat{\Pr}-\text{chance})/\sqrt{\text{chance}(1-\text{chance})/(n-\ell)}$,
+which is anti-conservative here: windows overlap at stride $1$, so the $n-\ell$
+agreement indicators are far from independent and $|z|$ is inflated by roughly
+the number of windows per independent block. We keep the column because its
+\emph{shape} is the point. At the legal lag the counts are exactly symmetric ---
+$37/127$ groups with $z>2$ and $37/127$ with $z<-2$, and $57/127$ with positive
+excess --- which is the signature of an over-dispersed null rather than of a
+weak but real signal. Dividing each $z$ by the crude block factor $\sqrt{H}$
+leaves $0/127$ groups significant in either direction. By contrast, at lag $1$
+the $127/127$ count is one-sided and survives any such deflation. No claim in
+this paper rests on these $z$ values; the decisive quantities are the mean
+excess ($-0.007$) and the half-life of \S\ref{sec:halflife}.
+
 \paragraph{Why the legal lag is $H$.}
 Window $t$ predicts the interval $[t+L, t+L+H)$. Its realized error is
 observable only after that interval closes, i.e.\ $H$ windows later. A selector
