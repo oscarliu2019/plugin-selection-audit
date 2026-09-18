@@ -1,0 +1,20 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+p1_results.csv,phase-1 runs for Exchange/H=720,,,39.0,,paper_correct,13 个 cell x 3 seed
+p1_results.csv,phase-1 cells for Exchange/H=720,,,13.0,,paper_correct,"4 骨干 x (none, san_lite, fredf) + DLinear revin"
+p1_results.csv,runs with status=ok,,,39.0,,paper_correct,没有失败的 run
+p1_results.csv,rows with usable n_test_windows,,,0.0,,ambiguous,p1_results.csv 的 n_test_windows / n_val_windows 对 Exchange 全是 NaN，全表 844 行里 803 行 NaN、其余 41 行为 0.0——这两列不可用，窗口数只能从 monday_final/p2/* 取
+p1_results.csv,n_train_windows,,,4496.0,,paper_correct,训练窗口 4496，训练侧不短
+selector_window_online.csv,n_test_windows,,,798.0,,paper_wrong,真实测试窗口 798，不是论文写的 399
+selector_window_online.csv,n_eval_windows used by the code,,399.0,399.0,0.0,paper_correct,"399 = floor(798/2)，来自 src/selector_window.py 的 start=min(H, n//2) 截断"
+selector_window_online.csv,legal delay (windows),,720.0,720.0,0.0,paper_correct,
+derived,legal post-delay decisions if no eval cap,,,78.0,,paper_wrong,798-720=78 次合法决策，所以「连一次合法决策都做不了」不成立
+selector_window_oracle_audit.csv,groups kept in the 127-group audits,,,4.0,,paper_wrong,4 组（4 个骨干）照常进入 Table 8/9/10 的 127 组均值
+selector_window_oracle_audit.csv,agreement pairs available at lag H,,,78.0,,paper_wrong,这 4 组在 lag H 只有 78 个（且互相重叠）一致性指标，却与最多 11425 窗口的组等权平均
+selector_window_oracle_audit.csv,max z at lag H among these 4 groups,,,6.886113984797128,,paper_wrong,DLinear 组 z=6.89、excess=+0.381，是 lag H 行 37 个 z>2 中最极端的贡献者之一
+derived,"mean excess at lag H, all 127 groups",,-0.007,-0.006507996386660134,0.0004920036133398663,paper_correct,
+derived,"mean excess at lag H, excluding Exchange/720",,,-0.011952196477275792,,paper_correct,剔掉这 4 组后 lag H 的均值 excess 从 -0.0065 变成 -0.0120，结论方向不变（更负）
+derived,groups with z>2 at lag H excluding Exchange/720,,,35.0,,paper_correct,37 → 35
+selector_window_inpool.csv,validation windows for Exchange/720 groups,,,41.0,,paper_wrong,只有 41 个验证窗口，却照常进入 96 组的 in-pool 门控训练（Table 12），论文没有为这类组设下限
+selector_window_inpool.csv,Exchange/720 groups inside the 96 gating groups,,,3.0,,paper_wrong,3 组（TimesNet 不在门控覆盖内）
+split_test_splitfix.csv,Exchange/720 groups in the split diagnostic,,,4.0,,paper_correct,4 组，fit 559 / eval 239 窗口，过了 200/100 门槛
+§4.3 text,fredf gain on Exchange/720/DLinear (%),,25.0,24.976774330271162,-0.023225669728837772,paper_correct,+25% 复现（24.98%），该 block 同时进入 Table 1/2/3/4/7 的 128 块均值

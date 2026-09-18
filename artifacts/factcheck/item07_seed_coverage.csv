@@ -1,0 +1,21 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+p1_results.csv,"configurations (backbone,dataset,H,arm)",,428.0,428.0,0.0,paper_correct,844 run 分布在 428 个 cell 上
+§6,configurations with 3 seeds,,208.0,208.0,0.0,paper_correct,seeds 2021|2022|2023
+p1_results.csv,configurations with a single seed,,,220.0,,paper_correct,220 个 cell 只有 seed 2021
+derived,share of cells with >=3 seeds (%),,,48.598130841121495,,paper_correct,48.6%：任何「跨 seed」结论最多覆盖不到一半的 cell
+derived,blocks where every available arm has 3 seeds,,,58.0,,paper_correct,58/128 = 45.3% 的 block 全臂三 seed，64 个 block 全臂单 seed，6 个混合
+derived,datasets carrying the 3-seed cells,,,4.0,,paper_correct,只有 ETTh1/ETTh2/Exchange/ILI（configs 里的 cheap tier）各 52 个 cell；ETTm1/ETTm2/Electricity/Weather 全是单 seed
+derived,3-seed cells per arm,,,16.0,,paper_correct,none/fredf/san_lite 各 64，revin 只有 16（DLinear x 4 cheap 数据集 x 4 horizon）
+§6 / Table 6,block-arm pairs with noise on both sides,,144.0,144.0,0.0,paper_correct,144/300 = 48% 的 block-arm 对可算 seed 噪声
+§6 / Table 6,median sigma_seed = sqrt(s_arm^2+s_none^2),,0.0049,0.00987228540837515,0.00497228540837515,paper_wrong,组合尺度的中位数是 0.00987；0.004947 是单臂 SD（两列合并）的中位数，论文与 Table 6 脚注把它标成了 sigma_seed
+§6,median pooled single-arm seed SD,,,0.004947405708090101,,paper_correct,0.004947——这正是论文印的 0.0049 的真实身份
+§6,median SE of a difference of seed-averaged means,,,0.005699766638042204,,paper_wrong,若真要「两个 seed 均值之差的噪声尺度」，应为 sqrt(s_a^2/n_a+s_c^2/n_c)，中位数 0.0057，三者不能混用
+§6,fraction of effects within seed noise (%),,28.0,27.77777777777778,-0.22222222222222143,paper_correct,28% 的分母是 144 对，而非 300 对，论文未明说
+§8.3 / Table 11,paired cells in the seed replication,,48.0,48.0,0.0,paper_correct,seed 2021 vs 2022
+§8.3,backbones covered by the seed replication,,,3.0,,paper_wrong,只有 DLinear/PatchTST/iTransformer，TimesNet 缺席；数据集只有 ETTh1/ETTh2/Exchange/ILI
+§8.3,share of the 127 decision groups covered (%),,,37.79527559055118,,paper_wrong,48/127 = 37.8%；摘要里的「79% surviving a seed change」只建立在这 48 个 cell 上
+§8.3 / abstract,reproducible share of headroom (%),,79.0,79.04986452303518,0.04986452303518263,paper_correct,ratio-of-means 口径复现 79.05%
+§8.3,"reproducible share, DLinear (%)",,,99.05267703044214,,paper_wrong,99.1%
+§8.3,"reproducible share, PatchTST (%)",,,87.21864986027809,,paper_wrong,87.2%
+§8.3,"reproducible share, iTransformer (%)",,,48.72079796355627,,paper_wrong,48.7%：总体 79% 掩盖了骨干间的巨大异质性，论文未报告
+§8.3,mean of per-cell reproducible_frac (%),,,71.8717500559824,,paper_correct,71.9%，与 ratio-of-means 的 79.05% 是两个口径，论文只印了后者

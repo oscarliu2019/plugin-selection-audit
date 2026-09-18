@@ -18,13 +18,18 @@ The paper is an **audit and a negative result**. It does not propose a new
 plug-in or a new selector. It shows that (i) the per-window oracle headroom that
 motivates adaptive plug-in selection is invariant to a random re-labeling of the
 per-window arms, so it cannot serve as evidence that selection is learnable;
-(ii) the underlying per-window structure is nonetheless real and reproducible
-across training seeds; and (iii) it is unusable anyway, because the identity of
+(ii) the underlying per-window structure is nonetheless real and largely
+reproducible across training seeds; and (iii) none of the three selector families
+we evaluated could use it, because the identity of
 the best arm decorrelates with a median half-life of about **5%** of the forecast
-horizon while deployment forces a decision lag of exactly **one** horizon.
+horizon while the feedback model admits no decision lag shorter than **one**
+horizon. The conclusions are bounded by the protocol (three plug-ins, four
+backbones, eight datasets, realized-error feedback) and every headline effect is
+also reported with the **dataset** as the resampling unit, where the online result
+weakens to a directional one.
 
 Everything numeric in the paper is recomputed from the artifacts in this folder by
-a script: `tools/verify_paper_numbers.py` re-derives **204 registered claims** and
+a script: `tools/verify_paper_numbers.py` re-derives **276 registered claims** and
 fails on any mismatch, in either direction (artifact changed but prose did not, or
 prose changed but artifact did not). There is a test that keeps the checker itself
 honest (§2).
@@ -70,13 +75,13 @@ All commands below are run **from this `release/` directory**.
 ## 2. Verify every number in the paper (~2 min, CPU, no data download)
 
 ```bash
-python tools/verify_paper_numbers.py                     # must print 204/204
+python tools/verify_paper_numbers.py                     # must print 276/276
 python tools/verify_paper_numbers.py --list              # every claim and its source
 python tools/verify_paper_numbers.py -v --only splitgate # one group, verbose
 python tools/verify_paper_numbers.py --json verify.json  # machine-readable
 ```
 
-Each of the 204 registered claims carries a recompute function that reads
+Each of the 276 registered claims carries a recompute function that reads
 `monday_final/` or `artifacts/robustness/` and compares the recomputed value with
 the registered one under an explicit tolerance. The checker then performs a
 **second, independent check**: it searches the normalised text of
@@ -231,6 +236,9 @@ unmarked validation trace.
 | §9.2 | within-split diagnostic: val −1.18% (81 groups), test −0.53% (111) | `monday_final/paper/splitfix/selector_window_split_{val,test}_splitfix.csv` |
 | §9.3 | online, delay sweep, break-even at 0.25xH | `weekend_report.json` -> `gating.online`, `gating.online_sweep` |
 | §10 | +1.36% / −2.32% decomposition | `gating.online` -> `best_fixed_test` fields |
+| §11, Tab. 14 | dataset-cluster bootstrap, LODO, dataset-level tests, seed noise band | `python tools/make_cluster_analysis.py` -> `artifacts/cluster/*` |
+| §11 | absolute-MSE regression shares (71% gate, 64% online) | `python tools/audit_paper_facts.py` -> `artifacts/factcheck/item09_absolute_mse.csv` |
+| §5–§9, fact fixes | FreDF 46.9%->59.4%, sigma_seed 0.0099, drift 25.5%, Exchange/H=720 78 decisions | `artifacts/factcheck/item0{3,4,5,6,7,8}_*.csv` |
 | §12, Tab. 13 | coverage gap 127 vs 96, gap homogeneity | `monday_final/paper/splitfix/selector_window_coverage_gap_splitfix.csv` |
 
 `tools/verify_paper_numbers.py --list` prints the same mapping at claim
@@ -271,15 +279,18 @@ release/
 │   ├── fft_compat.py          forces fp32 FFT under AMP (cuFFT fp16 restriction)
 │   └── synth.py               synthetic results, for testing the analysis code only
 ├── tools/
-│   ├── verify_paper_numbers.py    the 204-claim checker (start here)
+│   ├── verify_paper_numbers.py    the 276-claim checker (start here)
 │   ├── recompute_main_table.py    Tab. 1–2 from the raw phase-1 rows
 │   ├── make_audit_figs.py         Fig. 1, Fig. 2, 20-stratum table
 │   ├── make_robustness_tables.py  paper/tables_robust/*.tex
+│   ├── make_cluster_analysis.py   datasets as the resampling unit -> artifacts/cluster
+│   ├── audit_paper_facts.py       re-derives every disputed claim -> artifacts/factcheck
 │   └── weekend_report.py          aggregate report over all three phases
 ├── scripts/                   dataset download and config derivation
 ├── tests/                     417 tests
 ├── monday_final/              the authoritative results (see below)
-├── artifacts/                 features.csv and the robustness audit outputs
+├── artifacts/                 features.csv, the robustness audit outputs, plus
+│                              cluster/ (dataset-unit inference) and factcheck/
 └── third_party/tslib/         vendored Time-Series-Library, unmodified
 ```
 

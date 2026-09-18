@@ -1,0 +1,15 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+main.tex,occurrences of 'purge',,,0.0,,paper_wrong,全文 0 次：fit 段与 eval 段之间没有任何 purge/embargo
+main.tex,occurrences of 'zero drift',,,2.0,,paper_wrong,§9.2 与 §11 各 1 次，都把 70/30 时序切分当成零漂移
+main.tex,occurrences of 'same-distribution' / 'Same-split',,,3.0,,paper_wrong,§9.2 标题与 §11 checklist 第 5 条
+§9.2 measurement,groups where fit-segment MSE is recoverable,,,84.0,,ambiguous,111 个 test-internal 组里只有 84 组能同时拿到全测试段 none MSE（in-pool 96 组）从而反解出 fit 段 MSE；其余 27 组（含全部 TimesNet）无法核；逐窗口误差数组未公开，无法直接做分布检验
+§9.2 'zero drift',"median |drift| of none MSE, fit vs eval segment (%)",,0.0,25.457700065295256,25.457700065295256,paper_wrong,同一 split 前 70% 与后 30% 之间，none 的 MSE 水平中位数相差 25.5%
+§9.2 'zero drift',mean |drift| (%),,0.0,40.00604445399267,40.00604445399267,paper_wrong,40.0%
+§9.2 'zero drift',max drift (%),,0.0,155.42364859636612,155.42364859636612,paper_wrong,+155.4%（PatchTST/ETTh2/H=192）
+§9.2 'zero drift',min drift (%),,0.0,-29.849432983580254,-29.849432983580254,paper_wrong,-29.8%（PatchTST/Exchange/H=336）：漂移双向，不是小噪声
+§9.2 'zero drift',groups with |drift| > 10% ,,0.0,61.0,61.0,paper_wrong,61/84
+§9.2 'zero drift',groups with |drift| > 50% ,,0.0,28.0,28.0,paper_wrong,28/84
+§9.2 label bias,backbones covered by the test-internal row,,4.0,4.0,0.0,paper_correct,"""all backbones are covered"" 成立（111 组含 TimesNet 27 组）"
+§9.2 purge,median share of eval windows sharing targets with fit (%),,,22.184510953409443,,paper_wrong,无 purge，中位 22.2% 的评估窗口的预测目标与 fit 段目标区间重叠
+§9.2 purge,groups where every eval window overlaps fit targets,,,9.0,,paper_wrong,9/84 组 100% 重叠（H-1 >= eval 窗口数）
+§9.2 purge,median share of eval windows whose input overlaps fit targets (%),,,25.146559703795123,,paper_wrong,若要求输入与目标时间完全不相交（L+H 间隔），中位重叠比例升到 25.0%

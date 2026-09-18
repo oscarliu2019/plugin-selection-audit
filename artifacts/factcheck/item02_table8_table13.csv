@@ -1,0 +1,49 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+Table 8 / lag 1 window,mean agreement,,0.864,0.8638795377237402,-0.00012046227625983619,paper_correct,127 组均值
+Table 8 / lag 1 window,mean excess over chance,,0.469,0.46882074919009303,-0.00017925080990693898,paper_correct,逐组 excess 的均值；注意印出的 agreement-chance 四舍五入后在 lag H 行是 -0.006，与印出的 -0.007 差一个末位
+Table 8 / lag 1 window,groups with z>2,,127.0,127.0,0.0,paper_correct,同一分母 127
+Table 8 / lag 1 window,groups in row (denominator),,127.0,127.0,0.0,paper_correct,每行分母都是 127，口径统一
+Table 8 / lag H/4,mean agreement,,0.467,0.46734468040057964,0.00034468040057961113,paper_correct,127 组均值
+Table 8 / lag H/4,mean excess over chance,,0.072,0.07228589186693272,0.0002858918669327304,paper_correct,逐组 excess 的均值；注意印出的 agreement-chance 四舍五入后在 lag H 行是 -0.006，与印出的 -0.007 差一个末位
+Table 8 / lag H/4,groups with z>2,,93.0,93.0,0.0,paper_correct,同一分母 127
+Table 8 / lag H/4,groups in row (denominator),,127.0,127.0,0.0,paper_correct,每行分母都是 127，口径统一
+Table 8 / lag H/2,mean agreement,,0.415,0.4149325104047095,-6.748959529045973e-05,paper_correct,127 组均值
+Table 8 / lag H/2,mean excess over chance,,0.02,0.019873721871062563,-0.00012627812893743762,paper_correct,逐组 excess 的均值；注意印出的 agreement-chance 四舍五入后在 lag H 行是 -0.006，与印出的 -0.007 差一个末位
+Table 8 / lag H/2,groups with z>2,,72.0,72.0,0.0,paper_correct,同一分母 127
+Table 8 / lag H/2,groups in row (denominator),,127.0,127.0,0.0,paper_correct,每行分母都是 127，口径统一
+Table 8 / lag H,mean agreement,,0.389,0.38855079214698685,-0.0004492078530131671,paper_correct,127 组均值
+Table 8 / lag H,mean excess over chance,,-0.007,-0.006507996386660134,0.0004920036133398663,paper_correct,逐组 excess 的均值；注意印出的 agreement-chance 四舍五入后在 lag H 行是 -0.006，与印出的 -0.007 差一个末位
+Table 8 / lag H,groups with z>2,,37.0,37.0,0.0,paper_correct,同一分母 127
+Table 8 / lag H,groups in row (denominator),,127.0,127.0,0.0,paper_correct,每行分母都是 127，口径统一
+Table 8 / lag 2H,mean agreement,,0.397,0.39651338820491777,-0.00048661179508224794,paper_correct,127 组均值
+Table 8 / lag 2H,mean excess over chance,,0.002,0.0023447911639511198,0.0003447911639511197,paper_correct,逐组 excess 的均值；注意印出的 agreement-chance 四舍五入后在 lag H 行是 -0.006，与印出的 -0.007 差一个末位
+Table 8 / lag 2H,groups with z>2,,41.0,41.0,0.0,paper_correct,同一分母 127
+Table 8 / lag 2H,groups in row (denominator),,127.0,127.0,0.0,paper_correct,每行分母都是 127，口径统一
+Table 8 caption,chance = sum p_k^2,,0.395,0.3950587885336469,5.878853364688075e-05,paper_correct,
+Table 8 caption,agreement after per-window re-labeling,,0.307,0.3067219311457381,-0.00027806885426190364,paper_correct,数值本身复现
+Table 8 caption,mean of 1/K over the 127 groups,,,0.3064304461942258,,paper_wrong,"重贴标签后的 0.307 等于均匀标签零模型 mean(1/K)=0.3064，比 caption 自己定义的 chance=0.395 低 0.088；""matching chance"" 不成立"
+Table 8 caption,'Only l=H is causally legal',,,,,paper_wrong,同表还印了 l=2H 行，且 §9.3 / Table 15 明确把 2H 标为 legal；H 是最小合法滞后，不是唯一合法滞后
+Table 8 / §8 text,groups with z<-2 at lag H,,37.0,37.0,0.0,paper_correct,对称性论述成立
+Table 8 / §8 text,groups with positive excess at lag H,,57.0,57.0,0.0,paper_correct,
+Table 13 / val internal,N (groups),,81.0,81.0,0.0,paper_correct,跳过 fit<200 或 eval<100 窗口的组
+Table 13 / val internal,gate vs none (%),,2.01,2.0056042911267173,-0.0043957088732824445,paper_correct,
+Table 13 / val internal,gate vs bf_split (%),,-1.18,-1.1833183689937907,-0.003318368993790788,paper_correct,
+Table 13 / val internal,win rate vs bf_split (%),,35.0,34.5679012345679,-0.4320987654321016,paper_correct,分母与该行 N 一致
+Table 13 / val internal,oracle vs none (%),,11.35,11.348981167883448,-0.0010188321165518488,paper_correct,
+Table 13 / val internal,backbones covered,,,3.0,,paper_correct,val internal 只有 3 个骨干（无 TimesNet），test internal 有 4 个：两行的组集合不同，-1.18 与 -0.53 不是同一批组上的比较
+Table 13 / test internal,N (groups),,111.0,111.0,0.0,paper_correct,跳过 fit<200 或 eval<100 窗口的组
+Table 13 / test internal,gate vs none (%),,2.33,2.3253885949184356,-0.004611405081564435,paper_correct,
+Table 13 / test internal,gate vs bf_split (%),,-0.53,-0.5276134707403378,0.0023865292596622067,paper_correct,
+Table 13 / test internal,win rate vs bf_split (%),,38.0,37.83783783783784,-0.1621621621621614,paper_correct,分母与该行 N 一致
+Table 13 / test internal,oracle vs none (%),,10.37,10.370571160616702,0.000571160616702926,paper_correct,
+Table 13 / test internal,backbones covered,,,4.0,,paper_correct,val internal 只有 3 个骨干（无 TimesNet），test internal 有 4 个：两行的组集合不同，-1.18 与 -0.53 不是同一批组上的比较
+§9.2 text,test-internal gate accuracy,,0.411,0.41122726527165987,0.0002272652716598933,paper_correct,
+§9.2 text,test-internal majority accuracy,,0.486,0.4859258976268795,-7.410237312049928e-05,paper_correct,
+§9.2 text,test-internal Wilcoxon p,,0.19,0.19496142289948515,0.004961422899485146,paper_correct,
+cross-table counts,test-side decision groups (127),,127.0,127.0,0.0,paper_correct,Table 8/9/10 的分母
+cross-table counts,online groups (123),,123.0,123.0,0.0,paper_correct,Table 14 的分母 = 127 - 4 个 insufficient
+cross-table counts,gating groups (96),,96.0,96.0,0.0,paper_correct,Table 12 的分母
+cross-table counts,LODO groups (76),,76.0,76.0,0.0,paper_correct,Table 12 最后一行
+cross-table counts,covered + missing = 127,,127.0,127.0,0.0,paper_correct,Table 17 行列相加自洽：32+32+32+31=127，32+32+32+0=96
+cross-table counts,Table 17 audit column sums to 127,,127.0,127.0,0.0,paper_correct,
+cross-table counts,Table 17 gate column sums to 96,,96.0,96.0,0.0,paper_correct,

@@ -1,0 +1,452 @@
+{
+  "meta": {
+    "n_boot": 20000,
+    "seed": 20260918,
+    "runtime_seconds": 2.07,
+    "primary_effects": [
+      "a_online_vs_bf",
+      "b_oracle_vs_none",
+      "c_gate_vs_bf"
+    ]
+  },
+  "unit_hierarchy": {
+    "n_datasets": 8,
+    "datasets": [
+      "ETTh1",
+      "ETTh2",
+      "ETTm1",
+      "ETTm2",
+      "Electricity",
+      "Exchange",
+      "ILI",
+      "Weather"
+    ],
+    "n_dataset_horizon_pairs": 32,
+    "n_backbones": 4,
+    "n_horizons": 8,
+    "n_blocks_phase1": 128,
+    "n_cells_phase1": 428,
+    "n_runs_phase1": 844,
+    "n_groups_test_side": 127,
+    "n_groups_online": 123,
+    "n_groups_gating": 96,
+    "groups_per_dataset_test_side": {
+      "ETTh1": 16,
+      "ETTh2": 16,
+      "ETTm1": 16,
+      "ETTm2": 16,
+      "Electricity": 16,
+      "Exchange": 16,
+      "ILI": 16,
+      "Weather": 15
+    },
+    "groups_per_dataset_online": {
+      "ETTh1": 16,
+      "ETTh2": 16,
+      "ETTm1": 16,
+      "ETTm2": 16,
+      "Electricity": 16,
+      "Exchange": 12,
+      "ILI": 16,
+      "Weather": 15
+    },
+    "groups_per_dataset_gating": {
+      "ETTh1": 12,
+      "ETTh2": 12,
+      "ETTm1": 12,
+      "ETTm2": 12,
+      "Electricity": 12,
+      "Exchange": 12,
+      "ILI": 12,
+      "Weather": 12
+    },
+    "n_clusters_lodo_eligible": 7
+  },
+  "effects": {
+    "a_online_vs_bf": {
+      "pooled_mean_pct": -0.869912519186263,
+      "pooled_median_pct": -0.5209332377843132,
+      "n_groups": 123,
+      "n_datasets": 8,
+      "n_datasets_mean_positive": 1,
+      "n_datasets_mean_negative": 7,
+      "n_groups_positive": 25,
+      "frac_groups_positive_pct": 20.32520325203252,
+      "best_dataset": "ETTh1",
+      "best_dataset_mean_pct": 1.623109600787605,
+      "worst_dataset": "ETTh2",
+      "worst_dataset_mean_pct": -2.76842140237803,
+      "dataset_mean_range_pp": 4.391531003165635
+    },
+    "b_oracle_vs_none": {
+      "pooled_mean_pct": 10.145518283346268,
+      "pooled_median_pct": 7.745534846290976,
+      "n_groups": 127,
+      "n_datasets": 8,
+      "n_datasets_mean_positive": 8,
+      "n_datasets_mean_negative": 0,
+      "n_groups_positive": 127,
+      "frac_groups_positive_pct": 100.0,
+      "best_dataset": "ETTh2",
+      "best_dataset_mean_pct": 16.615514233560088,
+      "worst_dataset": "Electricity",
+      "worst_dataset_mean_pct": 1.08870741983056,
+      "dataset_mean_range_pp": 15.526806813729529
+    },
+    "c_gate_vs_bf": {
+      "pooled_mean_pct": -0.6678785328408386,
+      "pooled_median_pct": -0.5855202482343997,
+      "n_groups": 96,
+      "n_datasets": 8,
+      "n_datasets_mean_positive": 1,
+      "n_datasets_mean_negative": 7,
+      "n_groups_positive": 21,
+      "frac_groups_positive_pct": 21.875,
+      "best_dataset": "Weather",
+      "best_dataset_mean_pct": 0.14507626642221078,
+      "worst_dataset": "ETTm1",
+      "worst_dataset_mean_pct": -1.1883459496120061,
+      "dataset_mean_range_pp": 1.3334222160342168
+    },
+    "b2_oracle_vs_bf": {
+      "pooled_mean_pct": 8.346985624506317,
+      "pooled_median_pct": 7.254678624496817,
+      "n_groups": 123,
+      "n_datasets": 8,
+      "n_datasets_mean_positive": 8,
+      "n_datasets_mean_negative": 0,
+      "n_groups_positive": 123,
+      "frac_groups_positive_pct": 100.0,
+      "best_dataset": "Exchange",
+      "best_dataset_mean_pct": 16.701050605798464,
+      "worst_dataset": "Electricity",
+      "worst_dataset_mean_pct": 0.7534725834956424,
+      "dataset_mean_range_pp": 15.947578022302821
+    },
+    "c2_gate_vs_none": {
+      "pooled_mean_pct": 1.4983117029091784,
+      "pooled_median_pct": -0.08032449398950864,
+      "n_groups": 96,
+      "n_datasets": 8,
+      "n_datasets_mean_positive": 5,
+      "n_datasets_mean_negative": 3,
+      "n_groups_positive": 41,
+      "frac_groups_positive_pct": 42.70833333333333,
+      "best_dataset": "ETTh2",
+      "best_dataset_mean_pct": 9.444473724128162,
+      "worst_dataset": "Exchange",
+      "worst_dataset_mean_pct": -2.965911328169749,
+      "dataset_mean_range_pp": 12.410385052297912
+    }
+  },
+  "cluster_bootstrap": {
+    "a_online_vs_bf.pooled_mean": {
+      "n_clusters": 8,
+      "point_pct": -0.869912519186263,
+      "ci95_lo_pct": -1.753822053852178,
+      "ci95_hi_pct": 0.07327833431525527,
+      "ci95_width_pct": 1.8271003881674333,
+      "ci_excludes_zero": false,
+      "ci95_lo_pct_7clusters": -1.9529006373068432,
+      "ci95_hi_pct_7clusters": 0.07603384726242249
+    },
+    "a_online_vs_bf.pooled_median": {
+      "n_clusters": 8,
+      "point_pct": -0.5209332377843132,
+      "ci95_lo_pct": -1.2446372022482477,
+      "ci95_hi_pct": 0.0,
+      "ci95_width_pct": 1.2446372022482477,
+      "ci_excludes_zero": false,
+      "ci95_lo_pct_7clusters": -1.252990104881422,
+      "ci95_hi_pct_7clusters": -0.1581518077812368
+    },
+    "a_online_vs_bf.mean_of_dataset_means": {
+      "n_clusters": 8,
+      "point_pct": -0.9187801581071829,
+      "ci95_lo_pct": -1.7976657374345653,
+      "ci95_hi_pct": 0.039678153418756135,
+      "ci95_width_pct": 1.8373438908533215,
+      "ci_excludes_zero": false,
+      "ci95_lo_pct_7clusters": -1.9785271198095626,
+      "ci95_hi_pct_7clusters": 0.03933238353455715
+    },
+    "b_oracle_vs_none.pooled_mean": {
+      "n_clusters": 8,
+      "point_pct": 10.145518283346268,
+      "ci95_lo_pct": 6.377671965186822,
+      "ci95_hi_pct": 13.90710662235666,
+      "ci95_width_pct": 7.529434657169837,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": 6.228268663075182,
+      "ci95_hi_pct_7clusters": 14.05385070168777
+    },
+    "b_oracle_vs_none.pooled_median": {
+      "n_clusters": 8,
+      "point_pct": 7.745534846290976,
+      "ci95_lo_pct": 4.174696644388392,
+      "ci95_hi_pct": 11.125552344362656,
+      "ci95_width_pct": 6.950855699974264,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": 3.94634667531502,
+      "ci95_hi_pct_7clusters": 11.664440558513895
+    },
+    "b_oracle_vs_none.mean_of_dataset_means": {
+      "n_clusters": 8,
+      "point_pct": 10.124383799182427,
+      "ci95_lo_pct": 6.381797898274652,
+      "ci95_hi_pct": 13.876013178321156,
+      "ci95_width_pct": 7.494215280046504,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": 6.2390904099260736,
+      "ci95_hi_pct_7clusters": 14.009945447405999
+    },
+    "c_gate_vs_bf.pooled_mean": {
+      "n_clusters": 8,
+      "point_pct": -0.6678785328408386,
+      "ci95_lo_pct": -0.9417116190566963,
+      "ci95_hi_pct": -0.3669532313941204,
+      "ci95_width_pct": 0.5747583876625759,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": -0.9945638038747175,
+      "ci95_hi_pct_7clusters": -0.35243479845197806
+    },
+    "c_gate_vs_bf.pooled_median": {
+      "n_clusters": 8,
+      "point_pct": -0.5855202482343997,
+      "ci95_lo_pct": -1.2409714689472542,
+      "ci95_hi_pct": -0.1095703188059749,
+      "ci95_width_pct": 1.1314011501412793,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": -1.341222503523062,
+      "ci95_hi_pct_7clusters": -0.1306609824769748
+    },
+    "c_gate_vs_bf.mean_of_dataset_means": {
+      "n_clusters": 8,
+      "point_pct": -0.6678785328408388,
+      "ci95_lo_pct": -0.9417116190566961,
+      "ci95_hi_pct": -0.36695323139412045,
+      "ci95_width_pct": 0.5747583876625757,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": -0.9945638038747175,
+      "ci95_hi_pct_7clusters": -0.35243479845197806
+    },
+    "b2_oracle_vs_bf.pooled_mean": {
+      "n_clusters": 8,
+      "point_pct": 8.346985624506317,
+      "ci95_lo_pct": 5.634803424071348,
+      "ci95_hi_pct": 11.045854692067401,
+      "ci95_width_pct": 5.411051267996053,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": 5.3169198848753565,
+      "ci95_hi_pct_7clusters": 11.47633854731971
+    },
+    "b2_oracle_vs_bf.pooled_median": {
+      "n_clusters": 8,
+      "point_pct": 7.254678624496817,
+      "ci95_lo_pct": 3.8973989625287024,
+      "ci95_hi_pct": 9.510407591175575,
+      "ci95_width_pct": 5.613008628646872,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": 3.699328094069539,
+      "ci95_hi_pct_7clusters": 9.65479245833885
+    },
+    "b2_oracle_vs_bf.mean_of_dataset_means": {
+      "n_clusters": 8,
+      "point_pct": 8.599774796844585,
+      "ci95_lo_pct": 5.708964330022586,
+      "ci95_hi_pct": 11.53632070248125,
+      "ci95_width_pct": 5.827356372458664,
+      "ci_excludes_zero": true,
+      "ci95_lo_pct_7clusters": 5.35713953374158,
+      "ci95_hi_pct_7clusters": 11.990381334788554
+    },
+    "c2_gate_vs_none.pooled_mean": {
+      "n_clusters": 8,
+      "point_pct": 1.4983117029091784,
+      "ci95_lo_pct": -0.7513185396164971,
+      "ci95_hi_pct": 4.25469407412953,
+      "ci95_width_pct": 5.006012613746027,
+      "ci_excludes_zero": false,
+      "ci95_lo_pct_7clusters": -0.8845362263424825,
+      "ci95_hi_pct_7clusters": 4.831435160638636
+    },
+    "c2_gate_vs_none.pooled_median": {
+      "n_clusters": 8,
+      "point_pct": -0.08032449398950864,
+      "ci95_lo_pct": -0.6281078166637382,
+      "ci95_hi_pct": 0.1189037434509223,
+      "ci95_width_pct": 0.7470115601146605,
+      "ci_excludes_zero": false,
+      "ci95_lo_pct_7clusters": -0.7957779281021092,
+      "ci95_hi_pct_7clusters": 0.1371486850481283
+    },
+    "c2_gate_vs_none.mean_of_dataset_means": {
+      "n_clusters": 8,
+      "point_pct": 1.4983117029091781,
+      "ci95_lo_pct": -0.7513185396164969,
+      "ci95_hi_pct": 4.25469407412953,
+      "ci95_width_pct": 5.006012613746027,
+      "ci_excludes_zero": false,
+      "ci95_lo_pct_7clusters": -0.8845362263424825,
+      "ci95_hi_pct_7clusters": 4.831435160638636
+    }
+  },
+  "lodo": {
+    "a_online_vs_bf": {
+      "full_mean_pct": -0.869912519186263,
+      "min_mean_pct": -1.2427008735748788,
+      "max_mean_pct": -0.5860233403912325,
+      "any_sign_flip_mean": false,
+      "any_sign_flip_median": false,
+      "most_influential_dataset": "ETTh1",
+      "most_influential_delta_pp": -0.3727883543886158,
+      "most_influential_mean_pct": -1.2427008735748788
+    },
+    "b_oracle_vs_none": {
+      "full_mean_pct": 10.145518283346268,
+      "min_mean_pct": 9.212906254486615,
+      "max_mean_pct": 11.451004533943125,
+      "any_sign_flip_mean": false,
+      "any_sign_flip_median": false,
+      "most_influential_dataset": "Electricity",
+      "most_influential_delta_pp": 1.3054862505968572,
+      "most_influential_mean_pct": 11.451004533943125
+    },
+    "c_gate_vs_bf": {
+      "full_mean_pct": -0.6678785328408386,
+      "min_mean_pct": -0.78401493273556,
+      "max_mean_pct": -0.5935260447306719,
+      "any_sign_flip_mean": false,
+      "any_sign_flip_median": false,
+      "most_influential_dataset": "Weather",
+      "most_influential_delta_pp": -0.11613639989472135,
+      "most_influential_mean_pct": -0.78401493273556
+    },
+    "b2_oracle_vs_bf": {
+      "full_mean_pct": 8.346985624506317,
+      "min_mean_pct": 7.4438434643666245,
+      "max_mean_pct": 9.482464210078007,
+      "any_sign_flip_mean": false,
+      "any_sign_flip_median": false,
+      "most_influential_dataset": "Electricity",
+      "most_influential_delta_pp": 1.1354785855716898,
+      "most_influential_mean_pct": 9.482464210078007
+    },
+    "c2_gate_vs_none": {
+      "full_mean_pct": 1.4983117029091784,
+      "min_mean_pct": 0.3631456998778947,
+      "max_mean_pct": 2.1360578502061682,
+      "any_sign_flip_mean": false,
+      "any_sign_flip_median": false,
+      "most_influential_dataset": "ETTh2",
+      "most_influential_delta_pp": -1.1351660030312836,
+      "most_influential_mean_pct": 0.3631456998778947
+    }
+  },
+  "dataset_level_tests": {
+    "a_online_vs_bf": {
+      "group_level_wilcoxon_n": 123,
+      "group_level_wilcoxon_p": 1.1988876930844642e-05,
+      "dataset_level_n": 8,
+      "dataset_level_wilcoxon_p": 0.078125,
+      "dataset_level_wilcoxon_p_holm": 0.078125,
+      "dataset_level_sign_p": 0.0703125,
+      "dataset_level_wilcoxon_p_on_medians": 0.15625
+    },
+    "b_oracle_vs_none": {
+      "group_level_wilcoxon_n": 127,
+      "group_level_wilcoxon_p": 1.3894515759554441e-22,
+      "dataset_level_n": 8,
+      "dataset_level_wilcoxon_p": 0.0078125,
+      "dataset_level_wilcoxon_p_holm": 0.0234375,
+      "dataset_level_sign_p": 0.0078125,
+      "dataset_level_wilcoxon_p_on_medians": 0.0078125
+    },
+    "c_gate_vs_bf": {
+      "group_level_wilcoxon_n": 96,
+      "group_level_wilcoxon_p": 3.0690466236127136e-06,
+      "dataset_level_n": 8,
+      "dataset_level_wilcoxon_p": 0.015625,
+      "dataset_level_wilcoxon_p_holm": 0.03125,
+      "dataset_level_sign_p": 0.0703125,
+      "dataset_level_wilcoxon_p_on_medians": 0.03125
+    },
+    "b2_oracle_vs_bf": {
+      "group_level_wilcoxon_n": 123,
+      "group_level_wilcoxon_p": 6.3252466805487485e-22,
+      "dataset_level_n": 8,
+      "dataset_level_wilcoxon_p": 0.0078125,
+      "dataset_level_wilcoxon_p_holm": NaN,
+      "dataset_level_sign_p": 0.0078125,
+      "dataset_level_wilcoxon_p_on_medians": 0.0078125
+    },
+    "c2_gate_vs_none": {
+      "group_level_wilcoxon_n": 96,
+      "group_level_wilcoxon_p": 0.7548316426316314,
+      "dataset_level_n": 8,
+      "dataset_level_wilcoxon_p": 0.3828125,
+      "dataset_level_wilcoxon_p_holm": NaN,
+      "dataset_level_sign_p": 0.7265625,
+      "dataset_level_wilcoxon_p_on_medians": 0.6875
+    }
+  },
+  "seed_noise": {
+    "n_cells_multi_seed": 208,
+    "rel_sd_median_pct": 0.9478601621555353,
+    "rel_sd_q25_pct": 0.30090810851118655,
+    "rel_sd_q75_pct": 2.41016441359506,
+    "rel_sd_iqr_pct": 2.1092563050838735,
+    "rel_sd_p90_pct": 4.545325929694098,
+    "seed_noise_scale_median_mse": 0.00987228540837515,
+    "seed_noise_scale_rel_median_pct": 1.8249179255009,
+    "gain_a_mean_pct": -0.869912519186263,
+    "gain_c_mean_pct": -0.6678785328408386,
+    "frac_a_within_seed_noise_pct": 45.52845528455284,
+    "frac_c_within_seed_noise_pct": 50.0,
+    "frac_a_within_diff_noise_pct": 66.66666666666666,
+    "frac_c_within_diff_noise_pct": 68.75,
+    "abs_mean_a_over_rel_sd_median": 0.917764617523316,
+    "abs_mean_c_over_rel_sd_median": 0.7046171571574561,
+    "n_datasets_with_seed_replicates": 4,
+    "datasets_with_seed_replicates": [
+      "ETTh1",
+      "ETTh2",
+      "Exchange",
+      "ILI"
+    ],
+    "n_datasets_with_gain_a_inside_noise": 1,
+    "n_datasets_with_gain_c_inside_noise": 3
+  },
+  "p_value_floor": {
+    "n5": {
+      "wilcoxon": 0.0625,
+      "sign": 0.0625
+    },
+    "n6": {
+      "wilcoxon": 0.03125,
+      "sign": 0.03125
+    },
+    "n7": {
+      "wilcoxon": 0.015625,
+      "sign": 0.015625
+    },
+    "n8": {
+      "wilcoxon": 0.0078125,
+      "sign": 0.0078125
+    }
+  },
+  "friedman": {
+    "block_level_complete44_chi2": 30.899999999999977,
+    "block_level_complete44_p": 8.922736392863129e-07,
+    "block_level_complete44_n": 44,
+    "dataset_level_chi2": 7.799999999999997,
+    "dataset_level_p": 0.05033109785985342,
+    "dataset_level_n": 8,
+    "dataset_level_note": "平均秩（越小越好）none=2.50, revin=2.25, san_lite=3.50, fredf=1.75；k=4,N=8 的 Nemenyi CD=1.6583，比整个秩幅还宽"
+  },
+  "cannot_compute": [
+    "reviewer 提到的「只有 7 个 dataset」与产物不符：实测 8 个 dataset；7 只在 selector LODO 子集成立（ILI 结构性排除）。两种口径都已给出。",
+    "dataset 级别的 seed 重复不完整：208/428 个 cell 有 3 个 seed，且只落在 ETTh1/ETTh2/Exchange/ILI 四个 dataset 上，另外四个 dataset 的 seed 噪声无法计算；window-level 三个核心量只有 seed 2021，所以无法做 (dataset, seed) 双层 bootstrap。",
+    "per-lead-time 的可部署版本需要 validation 侧逐 lead-time 误差，仓库未落盘，因此本脚本不涉及 §7 的 lead-time 轴。"
+  ]
+}

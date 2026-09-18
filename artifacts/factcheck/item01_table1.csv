@@ -1,0 +1,33 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+Table 1 / complete-block / fredf,N (blocks),,44.0,44.0,0.0,paper_correct,分母＝该口径下可配对的 block 数
+Table 1 / complete-block / fredf,mean rel gain vs none (%),,3.6,3.6035051252441637,0.003505125244163576,paper_correct,block = backbone x dataset x horizon，多 seed 先取均值
+Table 1 / complete-block / fredf,Wilcoxon p (raw),,0.0058,0.0058244200529316,2.4420052931600766e-05,paper_correct,配对 Wilcoxon，双侧
+Table 1 / complete-block / fredf,p_Holm,,0.017,0.0174732601587948,0.0004732601587947999,paper_correct,每个口径各自为一个三元族，含单调化
+Table 1 / pairwise / fredf,N (blocks),,128.0,128.0,0.0,paper_correct,分母＝该口径下可配对的 block 数
+Table 1 / pairwise / fredf,mean rel gain vs none (%),,-2.37,-2.3731101782336976,-0.0031101782336975248,paper_correct,block = backbone x dataset x horizon，多 seed 先取均值
+Table 1 / pairwise / fredf,Wilcoxon p (raw),,0.44,0.4381760822507269,-0.0018239177492730962,paper_correct,配对 Wilcoxon，双侧
+Table 1 / pairwise / fredf,p_Holm,,0.76,0.7638030267046361,0.003803026704636059,paper_correct,每个口径各自为一个三元族，含单调化
+Table 1 / complete-block / san_lite,N (blocks),,44.0,44.0,0.0,paper_correct,分母＝该口径下可配对的 block 数
+Table 1 / complete-block / san_lite,mean rel gain vs none (%),,-1.29,-1.2876279031708526,0.0023720968291474076,paper_correct,block = backbone x dataset x horizon，多 seed 先取均值
+Table 1 / complete-block / san_lite,Wilcoxon p (raw),,0.056,0.05582616993888223,-0.00017383006111777038,paper_correct,配对 Wilcoxon，双侧
+Table 1 / complete-block / san_lite,p_Holm,,0.11,0.11165233987776446,0.001652339877764461,paper_correct,每个口径各自为一个三元族，含单调化
+Table 1 / pairwise / san_lite,N (blocks),,128.0,128.0,0.0,paper_correct,分母＝该口径下可配对的 block 数
+Table 1 / pairwise / san_lite,mean rel gain vs none (%),,-3.94,-3.938822369508657,0.0011776304913428959,paper_correct,block = backbone x dataset x horizon，多 seed 先取均值
+Table 1 / pairwise / san_lite,Wilcoxon p (raw),,5e-08,4.9499871543465155e-08,-5.001284565348426e-10,paper_correct,配对 Wilcoxon，双侧
+Table 1 / pairwise / san_lite,p_Holm,,1.5e-07,1.4849961463039547e-07,-1.500385369604521e-09,paper_correct,每个口径各自为一个三元族，含单调化
+Table 1 / complete-block / revin,N (blocks),,44.0,44.0,0.0,paper_correct,分母＝该口径下可配对的 block 数
+Table 1 / complete-block / revin,mean rel gain vs none (%),,3.55,3.548030126839727,-0.0019698731602728614,paper_correct,block = backbone x dataset x horizon，多 seed 先取均值
+Table 1 / complete-block / revin,Wilcoxon p (raw),,0.38,0.38190151335231803,0.0019015133523180294,paper_correct,配对 Wilcoxon，双侧
+Table 1 / complete-block / revin,p_Holm,,0.38,0.38190151335231803,0.0019015133523180294,paper_correct,每个口径各自为一个三元族，含单调化
+Table 1 / pairwise / revin,N (blocks),,44.0,44.0,0.0,paper_correct,分母＝该口径下可配对的 block 数
+Table 1 / pairwise / revin,mean rel gain vs none (%),,3.55,3.548030126839727,-0.0019698731602728614,paper_correct,block = backbone x dataset x horizon，多 seed 先取均值
+Table 1 / pairwise / revin,Wilcoxon p (raw),,0.38,0.38190151335231803,0.0019015133523180294,paper_correct,配对 Wilcoxon，双侧
+Table 1 / pairwise / revin,p_Holm,,0.76,0.7638030267046361,0.003803026704636059,paper_correct,每个口径各自为一个三元族，含单调化
+§4.1 / Table 1 caption,complete blocks over four arms,,44.0,44.0,0.0,paper_correct,四臂齐全的 block 数
+§4.1,"blocks where (none, revin) pair exists",,44.0,44.0,0.0,paper_correct,revin 剪枝后只剩 44 block
+§4.1,complete-block set == revin-pairable set (1=yes),,1.0,1.0,0.0,paper_correct,两个 44 是同一批 block，所以 revin 行在两种口径下数值必然相同，差别只在 Holm 族；没有任何一列少算或多算 block
+§4.1,DLinear share of the 44 complete blocks (%),,73.0,72.72727272727273,-0.27272727272726627,paper_correct,32/44
+Table 1 bookkeeping,raw runs behind the complete-block column,,,340.0,,paper_correct,两列都来自同一份 p1_results.csv；complete-block 列只用其中 340 次 run / 176 cell
+Table 1 bookkeeping,raw runs behind the pairwise column,,,844.0,,paper_correct,pairwise 列用全部 844 次 run / 428 cell
+Table 1 bookkeeping,blocks whose arms all have 3 seeds,,,58.0,,paper_correct,128 个 block 里 58 个是三 seed 均值、64 个是单 seed、6 个混合；Table 1 的 block 均值因此是不平衡加权，论文未说明
+Table 1 bookkeeping,blocks with a single seed on every arm,,,64.0,,paper_correct,同上

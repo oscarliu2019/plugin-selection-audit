@@ -1,0 +1,56 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+"static gate (in-pool reg, 96 groups)",groups,,,96.0,,paper_correct,分母
+"static gate (in-pool reg, 96 groups)",groups with higher absolute MSE than bf,,,68.0,,paper_correct,68/96 = 70.8%
+"static gate (in-pool reg, 96 groups)",share of groups worse in absolute MSE (%),,,70.83333333333334,,paper_correct,
+"static gate (in-pool reg, 96 groups)",median absolute MSE increase among worse groups,,,0.004629190346760681,,paper_correct,绝对 MSE 单位，不是百分比
+"static gate (in-pool reg, 96 groups)",P90 absolute MSE increase among worse groups,,,0.01330128242974187,,paper_correct,
+"static gate (in-pool reg, 96 groups)",max absolute MSE increase,,,0.09572284239179929,,paper_correct,最差组 iTransformer__ILI__h24__s2021
+"static gate (in-pool reg, 96 groups)",median relative increase among worse groups (%),,,1.2727027012145808,,paper_correct,同一批组的相对口径
+"static gate (in-pool reg, 96 groups)",max relative increase (%),,,6.128985508635899,,paper_correct,
+"static gate (in-pool reg, 96 groups)",worst group #1,,,0.09572284239179929,,paper_correct,ILI / iTransformer / H=24：bf 2.2943 -> 2.3900
+"static gate (in-pool reg, 96 groups)",worst group #2,,,0.052551369218132304,,paper_correct,ILI / iTransformer / H=36：bf 2.1916 -> 2.2442
+"static gate (in-pool reg, 96 groups)",worst group #3,,,0.022933812026659006,,paper_correct,ETTh1 / iTransformer / H=336：bf 0.4689 -> 0.4918
+"static gate (in-pool clf, 96 groups)",groups,,,96.0,,paper_correct,分母
+"static gate (in-pool clf, 96 groups)",groups with higher absolute MSE than bf,,,68.0,,paper_correct,68/96 = 70.8%
+"static gate (in-pool clf, 96 groups)",share of groups worse in absolute MSE (%),,,70.83333333333334,,paper_correct,
+"static gate (in-pool clf, 96 groups)",median absolute MSE increase among worse groups,,,0.003508688498387702,,paper_correct,绝对 MSE 单位，不是百分比
+"static gate (in-pool clf, 96 groups)",P90 absolute MSE increase among worse groups,,,0.013682280170828582,,paper_correct,
+"static gate (in-pool clf, 96 groups)",max absolute MSE increase,,,0.05465359570859363,,paper_correct,最差组 iTransformer__ILI__h36__s2021
+"static gate (in-pool clf, 96 groups)",median relative increase among worse groups (%),,,1.042638343091042,,paper_correct,同一批组的相对口径
+"static gate (in-pool clf, 96 groups)",max relative increase (%),,,4.953028253855608,,paper_correct,
+"static gate (in-pool clf, 96 groups)",worst group #1,,,0.05465359570859363,,paper_correct,ILI / iTransformer / H=36：bf 2.1916 -> 2.2463
+"static gate (in-pool clf, 96 groups)",worst group #2,,,0.039852124627898444,,paper_correct,ILI / iTransformer / H=24：bf 2.2943 -> 2.3341
+"static gate (in-pool clf, 96 groups)",worst group #3,,,0.023225016549434485,,paper_correct,ETTh1 / iTransformer / H=336：bf 0.4689 -> 0.4921
+"static gate (LODO, 76 groups)",groups,,,76.0,,paper_correct,分母
+"static gate (LODO, 76 groups)",groups with higher absolute MSE than bf,,,59.0,,paper_correct,59/76 = 77.6%
+"static gate (LODO, 76 groups)",share of groups worse in absolute MSE (%),,,77.63157894736842,,paper_correct,
+"static gate (LODO, 76 groups)",median absolute MSE increase among worse groups,,,0.003775011775053405,,paper_correct,绝对 MSE 单位，不是百分比
+"static gate (LODO, 76 groups)",P90 absolute MSE increase among worse groups,,,0.018222869214644846,,paper_correct,
+"static gate (LODO, 76 groups)",max absolute MSE increase,,,0.12240529459957616,,paper_correct,最差组 DLinear__ETTh2__h720__s2021
+"static gate (LODO, 76 groups)",median relative increase among worse groups (%),,,1.3766165865454816,,paper_correct,同一批组的相对口径
+"static gate (LODO, 76 groups)",max relative increase (%),,,29.156346398279943,,paper_correct,
+"static gate (LODO, 76 groups)",worst group #1,,,0.12240529459957616,,paper_correct,ETTh2 / DLinear / H=720：bf 0.4198 -> 0.5422
+"static gate (LODO, 76 groups)",worst group #2,,,0.05616570703670648,,paper_correct,ETTh2 / DLinear / H=336：bf 0.4174 -> 0.4735
+"static gate (LODO, 76 groups)",worst group #3,,,0.040309491760890104,,paper_correct,ETTm2 / DLinear / H=720：bf 0.4103 -> 0.4506
+"online selector (legal H delay, 123 groups)",groups,,,123.0,,paper_correct,分母
+"online selector (legal H delay, 123 groups)",groups with higher absolute MSE than bf,,,79.0,,paper_correct,79/123 = 64.2%
+"online selector (legal H delay, 123 groups)",share of groups worse in absolute MSE (%),,,64.22764227642277,,paper_correct,
+"online selector (legal H delay, 123 groups)",median absolute MSE increase among worse groups,,,0.004245197774492282,,paper_correct,绝对 MSE 单位，不是百分比
+"online selector (legal H delay, 123 groups)",P90 absolute MSE increase among worse groups,,,0.01931352721612164,,paper_correct,
+"online selector (legal H delay, 123 groups)",max absolute MSE increase,,,0.07907103553238548,,paper_correct,最差组 DLinear__ETTh2__h720__s2021
+"online selector (legal H delay, 123 groups)",median relative increase among worse groups (%),,,1.252990104888503,,paper_correct,同一批组的相对口径
+"online selector (legal H delay, 123 groups)",max relative increase (%),,,25.71332937637976,,paper_correct,
+"online selector (legal H delay, 123 groups)",worst group #1,,,0.07907103553238548,,paper_correct,ETTh2 / DLinear / H=720：bf 0.5223 -> 0.6013
+"online selector (legal H delay, 123 groups)",worst group #2,,,0.0536614061634873,,paper_correct,Exchange / TimesNet / H=336：bf 0.3746 -> 0.4282
+"online selector (legal H delay, 123 groups)",worst group #3,,,0.051283880848058905,,paper_correct,Exchange / DLinear / H=336：bf 0.3375 -> 0.3888
+online selector (all 127 groups),groups,,,127.0,,paper_correct,分母
+online selector (all 127 groups),groups with higher absolute MSE than bf,,,80.0,,paper_correct,80/127 = 63.0%
+online selector (all 127 groups),share of groups worse in absolute MSE (%),,,62.99212598425197,,paper_correct,
+online selector (all 127 groups),median absolute MSE increase among worse groups,,,0.004247980817264296,,paper_correct,绝对 MSE 单位，不是百分比
+online selector (all 127 groups),P90 absolute MSE increase among worse groups,,,0.018965019353547448,,paper_correct,
+online selector (all 127 groups),max absolute MSE increase,,,0.07907103553238548,,paper_correct,最差组 DLinear__ETTh2__h720__s2021
+online selector (all 127 groups),median relative increase among worse groups (%),,,1.2521391344934336,,paper_correct,同一批组的相对口径
+online selector (all 127 groups),max relative increase (%),,,25.71332937637976,,paper_correct,
+online selector (all 127 groups),worst group #1,,,0.07907103553238548,,paper_correct,ETTh2 / DLinear / H=720：bf 0.5223 -> 0.6013
+online selector (all 127 groups),worst group #2,,,0.0536614061634873,,paper_correct,Exchange / TimesNet / H=336：bf 0.3746 -> 0.4282
+online selector (all 127 groups),worst group #3,,,0.051283880848058905,,paper_correct,Exchange / DLinear / H=336：bf 0.3375 -> 0.3888

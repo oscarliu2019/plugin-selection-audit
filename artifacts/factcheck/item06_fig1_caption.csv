@@ -1,0 +1,11 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+Fig. 1 caption,decision groups plotted,,127.0,127.0,0.0,paper_correct,
+Fig. 1 caption,groups with half-life >= H,,0.0,0.0,0.0,paper_correct,"最大 half-life/H = 0.352，所以标题句 ""never reaches the decision lag"" 在组级别成立"
+Fig. 1 caption,max half-life / H,,,0.3521154334489608,,paper_wrong,0.3521（TimesNet/ILI/H=24，仅 134 个测试窗口）距离 half-life=H 只有 2.8 倍，远不到一个数量级
+Fig. 1 caption,groups with half-life/H > 0.1,,,18.0,,paper_wrong,"18/127 组在 H/10 线以上，""no group comes within an order of magnitude of it"" 被推翻"
+Fig. 1 caption,groups below the H/10 line (%),,,85.8267716535433,,paper_correct,"109/127 = 85.8%，""most sit below the H/10 dashed line"" 成立"
+Fig. 1 caption,median half-life/H at H=24,,0.19,0.19208661588697135,0.0020866158869713436,paper_correct,
+Fig. 1 caption,median half-life/H at H=720,,0.021,0.0212550364509288,0.0002550364509287979,paper_correct,
+Fig. 1 caption,monotone decline within both horizon families (1=yes),,1.0,1.0,0.0,paper_correct,"ILI 家族 [0.1921, 0.1089, 0.0745, 0.0499]，其余 [0.0856, 0.0518, 0.0292, 0.0213]，两族各自单调下降，H=96 的抬升确实是换家族"
+Fig. 1 caption,mean half-life/H,,0.061,0.060522170786981966,-0.00047782921301803283,paper_correct,
+Fig. 1 caption,median half-life/H,,0.051,0.051010996487508,1.0996487508005415e-05,paper_correct,

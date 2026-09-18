@@ -1,0 +1,297 @@
+{
+  "run_level": {
+    "n_runs_phase1": 844,
+    "n_runs_ok": 844,
+    "n_cells_phase1": 428,
+    "n_blocks_phase1": 128,
+    "n_datasets": 8,
+    "datasets": [
+      "ETTh1",
+      "ETTh2",
+      "ETTm1",
+      "ETTm2",
+      "Electricity",
+      "Exchange",
+      "ILI",
+      "Weather"
+    ],
+    "n_dataset_horizon_pairs": 32,
+    "n_backbones": 4,
+    "backbones": [
+      "DLinear",
+      "PatchTST",
+      "TimesNet",
+      "iTransformer"
+    ],
+    "n_horizons": 8,
+    "horizons": [
+      24,
+      36,
+      48,
+      60,
+      96,
+      192,
+      336,
+      720
+    ],
+    "n_seeds": 3,
+    "seeds": [
+      2021,
+      2022,
+      2023
+    ],
+    "runs_by_dataset": {
+      "ETTh1": 162,
+      "ETTh2": 156,
+      "ETTm1": 52,
+      "ETTm2": 52,
+      "Electricity": 52,
+      "Exchange": 156,
+      "ILI": 156,
+      "Weather": 58
+    },
+    "cells_by_dataset": {
+      "ETTh1": 58,
+      "ETTh2": 52,
+      "ETTm1": 52,
+      "ETTm2": 52,
+      "Electricity": 52,
+      "Exchange": 52,
+      "ILI": 52,
+      "Weather": 58
+    }
+  },
+  "group_levels": {
+    "test_side_127": {
+      "name": "test-side decision groups (§8, tab:persist)",
+      "n": 127,
+      "unit": "(backbone, dataset, pred_len) @ seed 2021",
+      "source": "selector_window_oracle_audit.csv",
+      "n_datasets": 8,
+      "n_backbones": 4,
+      "n_dataset_horizon_pairs": 32,
+      "groups_by_dataset": {
+        "ETTh1": 16,
+        "ETTh2": 16,
+        "ETTm1": 16,
+        "ETTm2": 16,
+        "Electricity": 16,
+        "Exchange": 16,
+        "ILI": 16,
+        "Weather": 15
+      },
+      "groups_by_backbone": {
+        "DLinear": 32,
+        "PatchTST": 32,
+        "TimesNet": 31,
+        "iTransformer": 32
+      },
+      "groups_by_pred_len": {
+        "24": 4,
+        "36": 4,
+        "48": 4,
+        "60": 4,
+        "96": 28,
+        "192": 28,
+        "336": 28,
+        "720": 27
+      },
+      "arm_counts": {
+        "2": 1,
+        "3": 83,
+        "4": 43
+      }
+    },
+    "online_feasible_123": {
+      "name": "online groups with a legal H-delay decision (§9.3, tab:online)",
+      "n": 123,
+      "unit": "(backbone, dataset, pred_len) @ seed 2021",
+      "source": "selector_window_online.csv insufficient==False",
+      "n_datasets": 8,
+      "n_backbones": 4,
+      "n_dataset_horizon_pairs": 31,
+      "groups_by_dataset": {
+        "ETTh1": 16,
+        "ETTh2": 16,
+        "ETTm1": 16,
+        "ETTm2": 16,
+        "Electricity": 16,
+        "Exchange": 12,
+        "ILI": 16,
+        "Weather": 15
+      },
+      "groups_by_backbone": {
+        "DLinear": 31,
+        "PatchTST": 31,
+        "TimesNet": 30,
+        "iTransformer": 31
+      },
+      "groups_by_pred_len": {
+        "24": 4,
+        "36": 4,
+        "48": 4,
+        "60": 4,
+        "96": 28,
+        "192": 28,
+        "336": 28,
+        "720": 23
+      },
+      "excluded": {
+        "n": 4,
+        "keys": [
+          "DLinear__Exchange__h720__s2021",
+          "PatchTST__Exchange__h720__s2021",
+          "TimesNet__Exchange__h720__s2021",
+          "iTransformer__Exchange__h720__s2021"
+        ]
+      }
+    },
+    "gating_96": {
+      "name": "gate-eligible groups (§9.1, tab:gate)",
+      "n": 96,
+      "unit": "(backbone, dataset, pred_len) @ seed 2021",
+      "source": "selector_window_inpool.csv",
+      "n_datasets": 8,
+      "n_backbones": 3,
+      "n_dataset_horizon_pairs": 32,
+      "groups_by_dataset": {
+        "ETTh1": 12,
+        "ETTh2": 12,
+        "ETTm1": 12,
+        "ETTm2": 12,
+        "Electricity": 12,
+        "Exchange": 12,
+        "ILI": 12,
+        "Weather": 12
+      },
+      "groups_by_backbone": {
+        "DLinear": 32,
+        "PatchTST": 32,
+        "iTransformer": 32
+      },
+      "groups_by_pred_len": {
+        "24": 3,
+        "36": 3,
+        "48": 3,
+        "60": 3,
+        "96": 21,
+        "192": 21,
+        "336": 21,
+        "720": 21
+      }
+    },
+    "lodo_rows_76": {
+      "name": "rows of the existing selector LODO (§9.1 LODO row)",
+      "n": 76,
+      "unit": "(backbone, dataset, pred_len) @ seed 2021, dataset = held-out one",
+      "source": "selector_window_lodo.csv",
+      "n_datasets": 7,
+      "n_backbones": 3,
+      "n_dataset_horizon_pairs": 28,
+      "groups_by_dataset": {
+        "ETTh1": 8,
+        "ETTh2": 12,
+        "ETTm1": 12,
+        "ETTm2": 12,
+        "Electricity": 12,
+        "Exchange": 12,
+        "Weather": 8
+      },
+      "groups_by_backbone": {
+        "DLinear": 28,
+        "PatchTST": 24,
+        "iTransformer": 24
+      },
+      "groups_by_pred_len": {
+        "96": 17,
+        "192": 21,
+        "336": 21,
+        "720": 17
+      },
+      "n_train_datasets_values": [
+        4,
+        6
+      ]
+    }
+  },
+  "cluster_units": {
+    "n_clusters_used_as_primary_unit": 8,
+    "clusters": [
+      "ETTh1",
+      "ETTh2",
+      "ETTm1",
+      "ETTm2",
+      "Electricity",
+      "Exchange",
+      "ILI",
+      "Weather"
+    ],
+    "n_clusters_lodo_eligible": 7,
+    "clusters_lodo_eligible": [
+      "ETTh1",
+      "ETTh2",
+      "ETTm1",
+      "ETTm2",
+      "Electricity",
+      "Exchange",
+      "Weather"
+    ],
+    "groups_per_cluster_by_metric": {
+      "a_online_vs_bf": {
+        "ETTh1": 16,
+        "ETTh2": 16,
+        "ETTm1": 16,
+        "ETTm2": 16,
+        "Electricity": 16,
+        "Exchange": 12,
+        "ILI": 16,
+        "Weather": 15
+      },
+      "b_oracle_vs_none": {
+        "ETTh1": 16,
+        "ETTh2": 16,
+        "ETTm1": 16,
+        "ETTm2": 16,
+        "Electricity": 16,
+        "Exchange": 16,
+        "ILI": 16,
+        "Weather": 15
+      },
+      "c_gate_vs_bf": {
+        "ETTh1": 12,
+        "ETTh2": 12,
+        "ETTm1": 12,
+        "ETTm2": 12,
+        "Electricity": 12,
+        "Exchange": 12,
+        "ILI": 12,
+        "Weather": 12
+      },
+      "b2_oracle_vs_bf": {
+        "ETTh1": 16,
+        "ETTh2": 16,
+        "ETTm1": 16,
+        "ETTm2": 16,
+        "Electricity": 16,
+        "Exchange": 12,
+        "ILI": 16,
+        "Weather": 15
+      },
+      "c2_gate_vs_none": {
+        "ETTh1": 12,
+        "ETTh2": 12,
+        "ETTm1": 12,
+        "ETTm2": 12,
+        "Electricity": 12,
+        "Exchange": 12,
+        "ILI": 12,
+        "Weather": 12
+      }
+    }
+  },
+  "notes": [
+    "实测 dataset 数为 8（ETTh1, ETTh2, ETTm1, ETTm2, Electricity, Exchange, ILI, Weather），不是 7；审稿意见里的 7 对应的是 selector LODO 子集（ILI 结构性缺席）。",
+    "127 / 123 / 96 组的统计单位都是 (backbone, dataset, pred_len)，seed 固定 2021，因此 group 在 dataset 维度上高度依赖：test 侧每个 dataset 贡献 15-16 组。",
+    "(dataset, pred_len) 组合数为 32：8 个 dataset x 4 个 horizon，ILI 用 24/36/48/60，其余用 96/192/336/720，两族 horizon 不重叠。"
+  ]
+}

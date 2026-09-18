@@ -1,0 +1,14 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+leadtime_profile.csv,distinct quarter labels,,,4.0,,paper_correct,"只有 [np.int64(1), np.int64(2), np.int64(3), np.int64(4)] 四个 quarter，没有任何 per-step 列"
+leadtime_argmin_stability.csv,n_quarters (unique value),,,4.0,,paper_correct,128 个 block 全部 n_quarters=4，粒度就是把 horizon 四等分
+p1_results.csv,max |mean(seg1..seg4) - mse|,,,2.04625917543666e-07,,paper_correct,四个 quarter 误差精确平均成 block MSE，是精确分解
+§7 / Table 7c,"quarter-wise oracle vs best fixed, mean (%)",,0.24,0.24023321534732262,0.00023321534732262394,paper_correct,独立复算自 leadtime_profile.csv
+§7 / Table 7c,"quarter-wise oracle vs best fixed, median (%)",,0.0,0.0,0.0,paper_correct,
+§7 / Table 7c,"quarter-wise oracle vs best fixed, max (%)",,3.29,3.2893943742179697,-0.0006056257820303834,paper_correct,
+§7 / Table 7c,blocks with positive gain,,56.0,56.0,0.0,paper_correct,56/128
+§7 / Table 7c,blocks with gain > 0.5pp (%),,12.5,12.5,0.0,paper_correct,
+§7 / Table 7c,"quarter-wise oracle vs none, mean (%)",,3.82,3.8217637364363,0.001763736436300345,paper_correct,
+§7 / Table 7c,"quarter-wise oracle vs none, median (%)",,1.27,1.2663306364689864,-0.0036693635310136585,paper_correct,
+§7 text,'no deployable per-lead-time rule can do better',,,,,paper_wrong,quarter-wise oracle 是「四段固定策略」的上界，不是任意 per-step 策略的上界：更细粒度的 oracle 满足 L_per-step <= L_quarter <= L_fixed，故 G_per-step >= G_quarter = +0.24%
+§12 caveat (v),'cannot raise the oracle ceiling by much',,,,,ambiguous,产物里只有 seg1..seg4，没有 per-step 误差，无法给出 per-step oracle 的数值；只能确定它 >= +0.24%，上限未知
+§7 / abstract,recompute matches stability csv (max abs diff),,,3.730349362740526e-14,,paper_correct,两条独立路径一致到 1e-13

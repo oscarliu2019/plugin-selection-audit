@@ -47,11 +47,12 @@
 \def\floatpagepagefraction{1}
 \def\textpagefraction{.001}
 
-\shorttitle{Per-window oracle headroom is not learnable}
+\shorttitle{Oracle headroom the evaluated selectors did not convert}
 \shortauthors{M. Liu and C. Chen}
 
-\title[mode = title]{Per-window oracle headroom is not learnable:
-a feedback-delay audit of plug-in selection for time series forecasting}
+\title[mode = title]{Large per-window oracle headroom that three selector
+families did not convert: a feedback-delay audit of plug-in selection for time
+series forecasting}
 
 \author[1]{Mianhan Liu}[orcid=0009-0000-0274-1062]
 \cormark[1]
@@ -76,28 +77,37 @@ Model-agnostic ``plug-and-play'' modules for time series forecasting---instance
 normalization, non-stationarity correction, frequency-domain losses---are reported
 as helpful, yet their gain flips sign across backbones. The natural response is to
 learn \emph{when} to attach \emph{which} module. In $2{,}035$ single-GPU training
-runs across four backbones, eight datasets and four horizons, we show that this
-research program is empty under the only causally legal deployment setting. First,
+runs across four backbones, eight datasets and four horizons, we audit that
+response and find no deployable gain, for reasons we can measure. First,
 the reported effect is smaller than three near-universal reporting choices:
 complete-block filtering, the error metric, and mean versus median. Each flips at
 least one verdict. Second, the per-window oracle that motivates gating is provably
 invariant to re-labeling which arm produced which error, so its $+10.15\%$
 headroom is no evidence of learnability; a seed-paired replication nevertheless
-shows the structure is real, with $79\%$ surviving a seed change. Third, the
+shows the structure is real, with $79\%$ surviving a seed change on the $48$ of
+$127$ groups where we could replicate, though that figure ranges from $99.1\%$ to
+$48.7\%$ across backbones. Third, the
 decisive quantity is the correlation length of best-arm identity: its median
-half-life is $5.1\%$ of the forecast horizon, whereas deployment forces a
-one-horizon decision lag. Three selector families accordingly lose to the arm
-frozen on validation, and the one legal axis, lead time, yields only $+0.24\%$.
-Only a constant mis-selection is recoverable. We distill the audit into a
-checklist for adaptive-selection claims.
+half-life is $5.1\%$ of the forecast horizon, whereas deployment forces a decision
+lag of at least one horizon. Three selector families accordingly lose to the arm
+frozen on validation---by $0.87$ points online and $0.67$ points when gated, with
+absolute error worse in $64\%$ and $71\%$ of groups respectively---and a
+quarter-wise lead-time oracle, on the one axis that carries no feedback delay,
+yields only $+0.24\%$. Because the eight datasets, not the $123$ decision groups,
+are the units that a generalization claim rests on, we report every headline
+effect with a dataset-cluster bootstrap and a leave-one-dataset-out sweep: the
+oracle headroom and the gating loss survive both, while the online loss does not
+exclude zero at the dataset level ($95\%$ CI $[-1.75, +0.07]$). Within these
+protocols, only a constant mis-selection was recoverable. We distill the audit
+into a checklist for adaptive-selection claims.
 \end{abstract}
 
 \begin{highlights}
-\item Block filtering flips a plug-in verdict from significant to null.
-\item Metric and mean-vs-median choices each flip a second verdict.
+\item Block filtering, metric and mean-vs-median each flip a plug-in verdict.
 \item Per-window oracle headroom survives per-window arm relabeling.
 \item Best-arm identity has a median half-life of 5.1\% of the forecast horizon.
-\item The one causally legal axis, lead time, has 0.24\% oracle headroom.
+\item A quarter-wise lead-time oracle is worth only 0.24\% over a frozen arm.
+\item Dataset-clustered intervals and leave-one-dataset-out bound every verdict.
 \end{highlights}
 
 \begin{keywords}
@@ -129,11 +139,12 @@ another plug-in but a \emph{decision rule}: given (backbone, dataset, horizon), 
 even given the current window, decide whether to attach a plug-in and which one.
 
 This paper is a systematic, negative, and --- we argue --- \emph{mechanistic}
-answer to that decision problem. We do not propose a new plug-in. We build the
+answer to that decision problem, within a protocol we state explicitly. We do not
+propose a new plug-in. We build the
 full conditional-gain matrix, quantify how much of the reported effect is
 produced by reporting conventions rather than by the method, attack the decision
-problem with three independent selector families, and finally explain the uniform
-failure with a single quantitative mechanism: \textbf{the correlation length of
+problem with three independent selector families, and offer a quantitative
+explanation for their uniform failure: \textbf{on this grid the correlation length of
 best-arm identity is one to two orders of magnitude shorter than the feedback
 delay that deployment imposes}.
 
@@ -150,21 +161,33 @@ plug-in effect on the same scale as the run-to-run noise of a training seed and
 as the compute it costs (\S\ref{sec:effectsize}): $28\%$ of block-level effects
 are smaller than same-configuration seed noise, and the arm with the largest
 compute overhead is also the only one that is significantly \emph{worse} than
-doing nothing.
-\item \textbf{An impossibility-style audit.} We prove and empirically verify
+doing nothing. The seed floor is measured on the $208$ of $428$ configurations we
+could afford to replicate, all on four cheap datasets, and we report that
+restriction wherever we use it.
+\item \textbf{A label-invariance argument, and the quantity it points at.} We prove
+and empirically verify
 that the per-window oracle used to motivate gating is invariant to per-window
-arm re-labeling (\S\ref{sec:oracle}), then measure the quantity that actually
-governs learnability --- the lagged predictability of best-arm identity --- and
-show it decays to chance well before the legal decision lag
+arm re-labeling (\S\ref{sec:oracle}), so a large oracle number is not evidence
+that anything is learnable. We then measure the quantity that does
+govern learnability --- the lagged predictability of best-arm identity --- and
+find it at chance well before the legal decision lag in every group we measured
 (\S\ref{sec:halflife}). A seed-paired replication rules out the trivial
 explanation that the headroom is training noise (\S\ref{sec:seed}).
-\item \textbf{A falsified-hypotheses table, and a closed loop.} Three selector
+\item \textbf{A falsified-hypotheses table.} Three selector
 families and two control conditions, all evaluated on identical decision groups
-against a deployable baseline, are all negative, with a delay sweep pinning the
-break-even point at $0.25\times H$ (\S\ref{sec:selectors}). Crucially, we also
+against a deployable baseline, are all negative, with a delay sweep locating the
+break-even point at $0.25\times H$ (\S\ref{sec:selectors}). We also
 audit the one selection axis that is \emph{not} subject to feedback delay, namely
-the lead-time index within a forecast (\S\ref{sec:leadtime}); its oracle is worth
-only $+0.24\%$. Both axes are therefore closed, for two different reasons.
+the lead-time index within a forecast (\S\ref{sec:leadtime}); a quarter-wise
+oracle on that axis is worth only $+0.24\%$. Neither axis produced a deployable
+gain here, for two different reasons.
+\item \textbf{Dataset-level inference.} A claim about ``plug-in selection'' is a
+claim that generalizes across datasets, so the eight datasets, not the $123$
+decision groups, are the units it rests on. We therefore report every headline
+effect three ways --- pooled over groups, as a dataset-cluster bootstrap, and
+under leave-one-dataset-out --- and we say which conclusions narrow
+(\S\ref{sec:cluster}). The oracle headroom and the gating loss survive; the
+online loss does not exclude zero once the datasets are the resampling unit.
 \end{enumerate}
 
 We deliberately report the deployable baseline
@@ -173,6 +196,25 @@ rather than the post-hoc best arm. Much of the apparent success of adaptive
 selection in the literature disappears against this baseline, and
 \S\ref{sec:recover} shows that what remains is a validation$\to$test transfer
 effect, not adaptation.
+
+\paragraph{What we do not claim}
+The result is an audit of a protocol, not a theorem about selection. We do not
+show that per-window plug-in selection is impossible, that no selector can work,
+or that this direction is closed. What we show is bounded by four things, and
+every conclusion below should be read inside them. \emph{Arms:} three plug-ins
+(\arm{revin}, \arm{san\_lite}, \arm{fredf}) plus the unmodified backbone, on four
+backbones, eight datasets and eight horizons. \emph{Feedback model:} the selector
+observes a window's realized error only after the full horizon has elapsed, which
+is the correct model for a forecaster whose target is a horizon of future values
+and the wrong model for a task where partial feedback arrives earlier.
+\emph{Selectors:} three families --- static complexity-feature gating, delayed
+online error feedback, horizon-aware checkpoint selection --- each with the
+hyper-parameter sweeps reported in \S\ref{sec:selectors}, and not, for instance, a
+meta-learned selector trained across datasets or one given exogenous covariates.
+\emph{Statistics:} MSE and MAE on the standard splits, with decision groups as the
+primary aggregation unit and datasets as the unit for any cross-dataset claim.
+A selector outside these boundaries is not addressed by our evidence, and
+\S\ref{sec:recover} lists the two openings we consider most promising.
 
 \section{Related work and positioning}
 
@@ -464,8 +506,13 @@ best \emph{single} $\alpha$ chosen on validation ($\alpha{=}0.1$) & $+0.12$ \\
 \end{table}
 
 Two readings follow from Table~\ref{tab:alpha}. (a) The method is not
-plug-and-play: essentially all of its benefit is recovered by per-cell tuning,
-and $59.4\%$ of blocks are positive only after tuning. (b) The tuning is
+plug-and-play: essentially all of its \emph{aggregate} benefit is recovered by
+per-cell tuning. Tuning raises the share of positive blocks from $46.9\%$ at
+$\alpha{=}0.5$ to $59.4\%$, and $14.6\%$ of blocks ($14$ of $96$) flip from
+non-positive to positive; two blocks flip the other way, because the tuning is
+honest and uses validation data only. So the default is wrong for a large
+minority of cells rather than for all of them, and the aggregate sign change is
+driven by magnitudes as much as by counts. (b) The tuning is
 genuinely per-cell: no single $\alpha$ transfers ($+0.12\%$), and the number of
 distinct optimal $\alpha$ values that one (backbone, dataset) pair takes across
 horizons is $1.79$. Normalizing $\alpha$ by $\sqrt{H}$ reduces that to $1.42$
@@ -485,12 +532,21 @@ make the effect size interpretable, and both are computable from artifacts we
 already have (Table~\ref{tab:seed-cost}).
 
 \paragraph{Against seed noise.}
-For $208$ configurations we trained three seeds, giving $144$ block--arm pairs in
+For $208$ of the $428$ phase-one configurations we trained three seeds, giving
+$144$ block--arm pairs in
 which both the arm and \arm{none} have a within-configuration standard
-deviation. We compare the plug-in effect against
+deviation. This coverage is not uniform and the restriction matters for what
+follows: the three-seed configurations are exactly the four cheap datasets
+(ETTh1, ETTh2, Exchange, ILI), and ETTm1, ETTm2, Electricity and Weather contain
+no replicated configuration at all, so $58$ of $128$ blocks ($45.3\%$) have all
+four arms replicated. We compare the plug-in effect against
 $\sigma_\text{seed}=\sqrt{s^2_\text{arm}+s^2_\text{none}}$, the noise scale of a
-difference of two seed-averaged means; the median $\sigma_\text{seed}$ is
-$0.0049$ MSE. On this scale $28\%$ of block-level plug-in effects are
+difference of two seed-averaged means; its median is $0.0099$ MSE, while the
+median single-arm seed standard deviation --- a smaller quantity that is easy to
+confuse with it --- is $0.0049$ MSE. In relative terms the within-configuration
+dispersion of MSE has median $0.95\%$, interquartile range $0.30$--$2.41\%$ and
+$90$th percentile $4.55\%$, which is the band that any claimed selector gain has
+to clear. On this scale $28\%$ of block-level plug-in effects are
 \emph{smaller than the noise of re-running the same configuration with a
 different seed}, and among the blocks in which the plug-in wins, $27\%$ are in
 that regime --- a different seed could have reversed them. The median effect is
@@ -551,26 +607,35 @@ consistent with a spectral term that trades local fidelity for global shape,
 whereas \arm{san\_lite}'s damage is worst near the origin ($-5.03\%$ in Q1) and
 decays with lead time.
 
-And yet the axis is empty (Table~\ref{tab:leadtime}c). An \emph{oracle} that
-picks the best arm independently for each quarter beats \arm{none} by $+3.82\%$
+And yet on the granularity we can measure, the axis is nearly flat
+(Table~\ref{tab:leadtime}c). A \emph{quarter-wise oracle} that
+picks the best arm independently for each of the four quarters beats \arm{none} by
+$+3.82\%$
 on average, which sounds like a target --- but almost all of that is the value of
 choosing an arm at all, not of switching. Measured against the best single frozen
-arm in the same block, the per-lead-time oracle is worth $+0.24\%$ on average,
-exactly $0.00\%$ at the median, and above half a point in only $12\%$ of blocks;
-its ceiling anywhere in the grid is $+3.29\%$. Since this is an oracle, no
-deployable per-lead-time rule can do better.
+arm in the same block, the quarter-wise lead-time oracle is worth $+0.24\%$ on
+average, exactly $0.00\%$ at the median, and above half a point in only $12\%$ of
+blocks; its maximum anywhere in the grid is $+3.29\%$.
 
-The two axes are thus closed for opposite reasons, and together they close the
-loop: the per-window axis has large headroom that expires before it can be acted
-on (\S\ref{sec:oracle}--\S\ref{sec:halflife}), while the lead-time axis can be
-acted on freely but has no headroom to act on. We note that measuring the
-\emph{deployable} version of the lead-time policy would require per-lead-time
-errors on the validation split, which our pipeline does not persist; given a
-$+0.24\%$ oracle ceiling we did not add them, but persisting them is a one-line
-change that we recommend to anyone who wants to close this axis empirically
-rather than by ceiling argument.
+Two things this does \emph{not} establish, and we were careless about both in an
+earlier draft. It is not an upper bound on finer lead-time policies: a per-step
+oracle partitions the horizon more finely, so its loss is no larger and its
+headroom is at least $+0.24\%$. And it is not a bound on deployable rules of a
+\emph{coarser} family either, except in the trivial sense that a quarter-wise
+oracle bounds quarter-wise rules. The honest statement is that the family we can
+measure --- horizon split into four segments, one frozen arm per segment --- has
+almost no headroom over a single frozen arm, and that measuring finer families
+would require per-step errors on the validation split, which our pipeline does not
+persist. Given the size of the quarter-wise number we did not add them; persisting
+them is a one-line change and we recommend it to anyone who wants to settle this
+axis rather than infer it.
 
-\section{Why per-window selection cannot work}
+The two axes therefore fail for opposite reasons on this grid: the per-window axis
+has large headroom that expires before it can be acted
+on (\S\ref{sec:oracle}--\S\ref{sec:halflife}), while the quarter-wise lead-time
+axis can be acted on freely but has little headroom to act on.
+
+\section{Why the evaluated per-window selectors did not work}
 \label{sec:oracle}
 
 \subsection{The per-window oracle is label-invariant}
@@ -611,9 +676,14 @@ $\sum_k p_k^2$, where $p_k$ is the marginal win frequency of arm $k$.
 
 \begin{table}[t]
 \centering\small
-\caption{Lagged agreement of best-arm identity, $127$ groups.
-Chance $=\sum_k p_k^2 = 0.395$; after per-window re-labeling the measured
-agreement is $0.307$, matching chance. Only $\ell = H$ is causally legal.}
+\caption{Lagged agreement of best-arm identity, $127$ groups. The reference used
+in the \emph{excess} column is the marginal chance level
+$\sum_k p_k^2 = 0.395$. Per-window re-labeling drives the measured agreement to
+$0.307$, which matches the uniform-label null $\mathrm{mean}(1/K) = 0.306$ rather
+than the marginal level, as it must: re-labeling destroys the marginal
+concentration along with the association. Any lag $\ell \ge H$ is causally legal
+and $\ell = H$ is the smallest legal lag, which is why the $H$ row is the
+deployable one; the $2H$ row is legal too and is shown for the trend.}
 \label{tab:persist}
 \begin{tabular}{lrrr}
 \toprule
@@ -622,16 +692,20 @@ Lag $\ell$ & agreement & excess & groups $z>2$ \\
 $1$ window & $0.864$ & $+0.469$ & $127/127$ \\
 $H/4$      & $0.467$ & $+0.072$ & $93/127$ \\
 $H/2$      & $0.415$ & $+0.020$ & $72/127$ \\
-$\mathbf{H}$ \textbf{(legal)} & $\mathbf{0.389}$ & $\mathbf{-0.007}$ & $\mathbf{37/127}$ \\
+$\mathbf{H}$ \textbf{(smallest legal)} & $\mathbf{0.389}$ & $\mathbf{-0.006}$ & $\mathbf{37/127}$ \\
 $2H$       & $0.397$ & $+0.002$ & $41/127$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Table~\ref{tab:persist} is the core of the paper. At lag $1$ the identity is
-enormously predictable ($+0.469$ over chance, every single group significant).
-At the only lag a deployed system may use it is \emph{at chance}
-($-0.007$). The signal exists; it expires before it can be acted on.
+enormously predictable ($+0.469$ over chance, every group flagged).
+At the smallest lag a deployed system may use it is \emph{at chance}
+($-0.006$, and no larger at $2H$). The signal exists; it expires before it can be
+acted on. Four of the $127$ groups --- Exchange at $H{=}720$ on all four
+backbones --- contribute only $78$ overlapping pairs each at the legal lag rather
+than several hundred, and we report in \S\ref{sec:threats} what happens when they
+are dropped.
 
 \paragraph{The per-group $z$ column is a dispersion diagnostic, not an inference.}
 The $z>2$ counts use the i.i.d.\ binomial reference
@@ -646,16 +720,21 @@ weak but real signal. Dividing each $z$ by the crude block factor $\sqrt{H}$
 leaves $0/127$ groups significant in either direction. By contrast, at lag $1$
 the $127/127$ count is one-sided and survives any such deflation. No claim in
 this paper rests on these $z$ values; the decisive quantities are the mean
-excess ($-0.007$) and the half-life of \S\ref{sec:halflife}.
+excess ($-0.006$) and the half-life of \S\ref{sec:halflife}.
 
-\paragraph{Why the legal lag is $H$.}
+\paragraph{Why the smallest legal lag is $H$.}
 Window $t$ predicts the interval $[t+L, t+L+H)$. Its realized error is
-observable only after that interval closes, i.e.\ $H$ windows later. A selector
+observable only after that interval closes, i.e.\ $H$ windows later, so every lag
+$\ell \ge H$ is legal and $\ell = H$ is the tightest of them. A selector
 that decides for window $t$ using any feedback from window $t' > t-H$ is using
-information that does not exist at decision time. This is not a modeling
-choice but an arithmetic property of $H$-step forecasting, and it is the reason
-the entire literature's zero-delay ablations look so much better than anything
-deployable.
+information that does not exist at decision time. This is an arithmetic property
+of the feedback model rather than a modeling preference, and the model is the
+right one when the target is a block of $H$ future values scored after the fact.
+It is the wrong one for a task where partial or proxy feedback arrives sooner ---
+an early-lead-time error, a cheap surrogate, an exogenous regime label --- and
+\S\ref{sec:recover} treats that as the most promising opening we can see. Within
+our model it is also the reason the zero-delay ablations common in this literature
+look so much better than anything deployable.
 
 \subsection{How long does the signal live?}
 \label{sec:halflife}
@@ -720,17 +799,21 @@ $\text{half-life}/H$ \emph{decreases} with $H$ (Spearman $-0.88$ over the
 horizon-level medians, $-0.73$ over all groups):
 $0.192$ at $H{=}24$ down to $0.021$ at $H{=}720$.
 Long-horizon forecasting --- precisely where plug-ins are marketed --- is where
-window-level plug-in selection is most hopeless.
+the gap between the usable correlation length and the legal decision lag is
+widest, and so where window-level plug-in selection is least likely to pay.
 Figures~\ref{fig:halflife} and~\ref{fig:decay} plot the two views.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figs/fig_halflife_vs_horizon.pdf}
-\caption{\textbf{The usable correlation length never reaches the decision lag.}
+\caption{\textbf{The usable correlation length stays below the decision lag in
+every group we measured.}
 (a) Half-life of best-arm identity vs.\ forecast horizon, one marker per
 decision group ($127$; color $=$ backbone, marker $=$ dataset), log--log.
-The solid line is the break-even condition half-life $=H$; \emph{no group comes
-within an order of magnitude of it}, and most sit below the $H/10$ dashed line.
+The solid line is the break-even condition half-life $=H$; \emph{no group reaches
+it} (the maximum is $0.35H$, TimesNet/ILI/$H{=}24$), and most sit below the $H/10$
+dashed line ($109/127 = 86\%$; the remaining $18$ groups fall between $0.1H$ and
+$0.35H$).
 (b) The ratio half-life$/H$ per horizon: gray dots are groups, red is the median,
 falling from $0.19$ at $H{=}24$ to $0.021$ at $H{=}720$. The decline is monotone
 \emph{within} each of the two horizon families ($24/36/48/60$ for ILI,
@@ -746,9 +829,9 @@ family, not a reversal.}
 Excess-over-chance agreement of best-arm identity vs.\ absolute lag (windows),
 by backbone (a), dataset (b) and horizon (c). Only lags with full support across
 the groups in a stratum are drawn. Every curve reaches chance by lag
-$\approx10^{2}$; in (c) the dotted vertical lines mark each stratum's legal
-decision lag $H$ (same color), and every curve has already flattened at or
-before its own line. No stratum is an exception.}
+$\approx10^{2}$; in (c) the dotted vertical lines mark each stratum's smallest
+legal decision lag $H$ (same color), and every curve has already flattened at or
+before its own line. None of the $20$ strata is an exception.}
 \label{fig:decay}
 \end{figure}
 
@@ -769,8 +852,11 @@ static gate given perfect features.
 \begin{table}[t]
 \centering\small
 \caption{A seed-paired replication shows the per-window structure is real and
-largely reproducible, so the failure of every selector cannot be explained as
-``there is nothing there to learn''.}
+largely reproducible, so the failure of the evaluated selectors is not explained
+by ``there is nothing there to learn''. The replication covers $48$ of the $127$
+decision groups ($37.8\%$) on three backbones --- \arm{TimesNet} is absent --- and
+the reproducible share of headroom is heterogeneous across them:
+\arm{DLinear} $99.1\%$, \arm{PatchTST} $87.2\%$, \arm{iTransformer} $48.7\%$.}
 \label{tab:crossseed}
 \fitwidth{%
 \begin{tabular}{lr}
@@ -797,12 +883,17 @@ backbone converges to the same solution under both seeds, reproducibility is
 trivial and the audit has no discriminative power for it (near-convex models such
 as \arm{DLinear} are the worst case). With same-arm error correlation $0.989$ and
 block-level MSE moving by $1.33\%$, the model does change, yet \emph{which window
-wants which plug-in} stays stable. So the finding is not ``there is nothing to
-learn'' but the sharper ``the thing to learn is real, and it is unavailable in
-time''.
+wants which plug-in} stays stable. The backbone breakdown in the caption is the
+honest version of this: the $79\%$ pooled figure is carried by \arm{DLinear} and
+\arm{PatchTST}, and for \arm{iTransformer} under half the headroom survives a
+seed change, so for that backbone part of the oracle number \emph{is} training
+noise. So the finding is not ``there is nothing to
+learn'' but the more specific ``on most of the grid the thing to learn is real,
+and it is unavailable in time''.
 
 \section{Three selector families, one verdict}
 \label{sec:selectors}
+
 
 We now test the decision problem directly. All numbers are relative to the
 deployable \arm{best\_fixed\_val} baseline on identical decision groups.
@@ -862,26 +953,45 @@ do not claim it. Leave-one-group-out feature ablation is consistent --- removing
 any of the five feature groups changes the gain by at most $0.13$ points, and
 removing the entropy group even \emph{improves} it.
 
-\paragraph{Same-distribution split diagnostic.}
+\paragraph{Within-split chronological diagnostic.}
 The gate above is trained on validation windows and applied to test windows, so
 two confounds remain: validation errors are mildly optimistic (that split also
-drives early stopping) and there is a val$\to$test shift. We remove both by
+drives early stopping) and there is a val$\to$test source difference. We remove
+both by
 re-running the identical gate \emph{inside a single split}: the first $70\%$ of
 windows chronologically to fit, the last $30\%$ to evaluate, with the fixed-arm
 baseline \arm{bf\textsubscript{split}} also chosen on the fitting segment, so
 neither side sees the evaluation segment. With
 \texttt{source}=\arm{val} the optimism is present on both sides and cancels;
 with \texttt{source}=\arm{test} the labels have \emph{never} been touched by
-early stopping or checkpoint selection, so the label bias is exactly zero and all
+early stopping or checkpoint selection, so the label bias is removed and all
 backbones are covered. Both are diagnostic upper bounds, not deployable
 policies.
 
+Two things this diagnostic does not remove, and the earlier draft's phrase ``zero
+drift'' was wrong about both. It removes the val$\to$test \emph{source}
+difference, not distribution drift: on the $84$ groups where we can recover the
+fitting-segment error of \arm{none}, its MSE differs between the two segments by a
+median of $25.5\%$ in absolute terms (mean $40.0\%$, maximum $+155.4\%$, and the
+sign runs both ways), with $61$ of $84$ groups above $10\%$. And it does not purge
+the boundary: at stride $1$ the last fitting window and the first evaluation
+windows share forecast targets, so without a purge of at least $H$ origins a
+median of $22.2\%$ of evaluation windows overlap the fitting segment's targets
+($9$ of $84$ groups overlap completely, and requiring an $L+H$ gap raises the
+median to $25.0\%$). Both effects make the diagnostic \emph{easier} for the gate
+than deployment would be, which is why we read it as an upper bound; a purged
+version is the natural refinement and we did not run it.
+
 \begin{table}[t]
 \centering\small
-\caption{Same-distribution split diagnostic: gate fitted and evaluated inside one
-split (chronological $70/30$), removing both label optimism and val$\to$test
-shift. \arm{bf\textsubscript{split}} is the fixed arm chosen on the fitting
-segment. Groups with $<200$ fitting or $<100$ evaluation windows are skipped.}
+\caption{Within-split chronological diagnostic: gate fitted and evaluated inside
+one split ($70/30$ by time), removing label optimism and the val$\to$test source
+difference but not drift and not target overlap at the boundary.
+\arm{bf\textsubscript{split}} is the fixed arm chosen on the fitting
+segment. Groups with $<200$ fitting or $<100$ evaluation windows are skipped. The
+two rows are different group sets --- val-internal covers three backbones and $81$
+groups, test-internal four backbones and $111$ --- so $-1.18$ and $-0.53$ are not
+a paired contrast.}
 \label{tab:splitgate}
 \begin{tabular}{lrrrrr}
 \toprule
@@ -893,8 +1003,9 @@ test internal & $111$ & $+2.33$ & $\mathbf{-0.53}$ & $38\%$ & $+10.37$ \\
 \end{tabular}
 \end{table}
 
-The verdict is unchanged (Table~\ref{tab:splitgate}). Under zero drift and zero
-label bias the gate still loses to a frozen arm chosen from the same
+The verdict is unchanged (Table~\ref{tab:splitgate}). With the label optimism and
+the source difference removed --- and with a boundary that if anything favours the
+gate --- it still loses to a frozen arm chosen from the same
 information ($-0.53$, positive in $38\%$ of groups, $p{=}0.19$), and its
 per-window accuracy
 ($0.411$) is still below the majority-arm rate ($0.486$), beating it in only
@@ -907,8 +1018,8 @@ denominator under a noisy numerator. We report all three rather than pick one,
 and we do not rest any conclusion on them: the load-bearing fact is the
 comparison against the frozen arm, which needs no ratio. This rules out ``the
 validation split was used for early
-stopping'' and ``val$\to$test shift'' as explanations: what is missing is
-window-level signal, not clean labels. One further detail sharpens the main
+stopping'' and ``the val$\to$test source difference'' as explanations: what is
+missing is window-level signal, not clean labels. One further detail sharpens the main
 result: in the test-internal setting the gate is on par with the
 \emph{validation}-chosen arm ($+0.08$) while losing to the split-chosen arm
 ($-0.53$), and the split-chosen arm coincides with the evaluation-segment
@@ -943,12 +1054,17 @@ $\leq11$ arms & $+1.31$ & $-0.82$ & $+2.84$ & $3.66$\,pp \\
 
 The legal configuration loses ($-0.87$, positive in $20\%$ of groups) while the
 illegal one wins by $+2.47$: a $3.34$-point delay cost. This is the same
-conclusion as Table~\ref{tab:persist}, reached with a completely different
+conclusion as Table~\ref{tab:persist}, reached with a different
 estimator and no learned model at all. The count is $123$ of the $127$ decision
 groups; the four excluded ones are Exchange at $H{=}720$ on all four backbones,
-where the legal delay ($720$ windows) exceeds the number of evaluation windows
-($399$), so no legal decision can be made at all. That exclusion is itself an
-instance of the thesis, not a limitation of the estimator.
+where a $720$-window delay leaves only $78$ post-delay decisions out of $798$ test
+windows. We exclude them because $78$ decisions is too few for a stable estimate,
+not because no legal decision exists --- an earlier draft said the latter, which
+was wrong. Including them moves the legal mean from $-0.87$ to $-0.85$ and changes
+no sign. These four groups do enter the other audits, where their support is also
+thin: at the legal lag in Table~\ref{tab:persist} each contributes $78$
+overlapping pairs, and dropping them moves the mean excess from $-0.006$ to
+$-0.012$ and the $z>2$ count from $37$ to $35$.
 
 \paragraph{Delay sweep.}
 Sweeping the delay in multiples of $H$ (all cells evaluated on one common test
@@ -959,7 +1075,8 @@ $1H$) gives a clean break-even point (Table~\ref{tab:delaysweep}).
 \begin{table}[t]
 \centering\small
 \caption{Delay $\times$ feedback-window sweep, gains vs.\ \arm{bf} (\%). ``fb''
-is the sliding feedback-window length. Only $\ell\geq1H$ is causally legal.}
+is the sliding feedback-window length. Lags $\ell\geq1H$ are causally legal;
+shorter ones are shown to locate the break-even point.}
 \label{tab:delaysweep}
 \begin{tabular}{lrrrrl}
 \toprule
@@ -989,6 +1106,109 @@ last epoch). Over all $844$ cells, none beats the validation-MSE baseline
 $p{=}6.8\!\times\!10^{-13}$), while the post-hoc oracle checkpoint would give
 $+0.92$. Even re-reading existing logs yields nothing.
 
+\section{What the eight datasets support}
+\label{sec:cluster}
+
+Every number so far is aggregated over decision groups, and a group is a
+(backbone, dataset, horizon) triple. That is the right unit for the question
+``did this selector beat a frozen arm in this configuration'', and the wrong unit
+for the question a reader actually cares about, which is whether a selector works
+on datasets it has not seen. The $123$ online groups live on eight datasets, so
+sixteen of them share a dataset with fifteen others; treating them as independent
+evidence is the standard mistake in this literature and we made it in an earlier
+draft, where a group-level Wilcoxon test on the online effect returned
+$p = 1.2\!\times\!10^{-5}$. That $p$-value assumes $123$ independent units and is
+not defensible.
+
+We therefore re-report the three load-bearing effects with the dataset as the
+resampling unit: a nonparametric cluster bootstrap over datasets
+($20{,}000$ resamples), a leave-one-dataset-out sweep, and an exact paired test on
+the eight dataset means. Table~\ref{tab:cluster} gives all three.
+
+\begin{table}[t]
+\centering\small
+\caption{The same three effects at three levels of aggregation. ``pooled'' is the
+mean over decision groups, as in Tables~\ref{tab:gate}--\ref{tab:online};
+``$\pm$ datasets'' is a $95\%$ percentile interval from a cluster bootstrap that
+resamples the eight datasets; LODO is the range of the pooled mean over the eight
+leave-one-dataset-out subsets; $p_{\text{ds}}$ is an exact Wilcoxon signed-rank
+test on the eight dataset means, whose two-sided floor at $n{=}8$ is $0.0078$.
+Generated from \texttt{artifacts/cluster/}.}
+\label{tab:cluster}
+\fitwidth{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Effect & pooled & $\pm$ datasets ($95\%$) & sign & LODO range & $p_{\text{ds}}$ \\
+\midrule
+per-window oracle vs \arm{none}
+ & $+10.15$ & $[+6.38, +13.91]$ & $8/8$ & $[+9.21, +11.45]$ & $0.0078$ \\
+gate (in-pool) vs \arm{bf}
+ & $-0.67$  & $[-0.94, -0.37]$  & $1/8$ & $[-0.78, -0.59]$  & $0.0156$ \\
+online (legal $H$) vs \arm{bf}
+ & $-0.87$  & $[-1.75, +0.07]$  & $1/8$ & $[-1.24, -0.59]$  & $0.0781$ \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Three things change and one does not.
+
+\emph{The oracle headroom survives.} All eight datasets have a positive mean, the
+cluster interval is far from zero, and the leave-one-dataset-out range
+$[+9.21, +11.45]$ is narrow --- dropping Electricity, the least favourable
+dataset, moves it up rather than down. The claim ``there is large per-window
+headroom on this grid'' is a cross-dataset claim and it holds. Combined with
+Proposition~\ref{prop:invariance}, that is exactly the uncomfortable pairing the
+paper is about: a robust number that is not evidence of learnability.
+
+\emph{The gating loss survives.} Seven of eight datasets are negative, the cluster
+interval excludes zero, and no leave-one-out subset changes the sign. The best
+dataset, Weather, is $+0.15$, which is inside the seed noise band of
+\S\ref{sec:effectsize}.
+
+\emph{The online loss weakens to a directional result.} Seven of eight datasets
+are negative and every leave-one-out subset stays negative, but the dataset-cluster
+interval is $[-1.75, +0.07]$ and the exact dataset-level test gives $p = 0.078$,
+which at $n = 8$ is the second-smallest attainable value. The pooled point
+estimate $-0.87$ is unchanged; what changes is what we may say about it. We
+therefore state it as: \emph{on seven of eight datasets the legal online selector
+lost to the frozen arm, and we cannot exclude a small positive effect on a new
+dataset.} ETTh1 is the single positive dataset ($+1.62$) and also the most
+influential one --- dropping it moves the pooled mean to $-1.24$.
+
+\emph{Nothing reverses.} No effect changes sign under any leave-one-dataset-out
+subset, and the dataset-level Friedman test over the four arms
+($\chi^2 = 7.80$, $p = 0.050$, $n = 8$) is at the edge of significance with a
+Nemenyi critical difference of $1.66$ that is wider than the entire range of
+average ranks. So the \emph{ranking} of the four arms is not established across
+datasets either, and we do not claim one.
+
+\paragraph{Two structural limits on this analysis.}
+First, eight clusters is few. The bootstrap intervals are wide because they should
+be, and an exact paired test on eight datasets cannot report anything below
+$p = 0.0078$; we quote that floor next to every dataset-level $p$-value rather than
+let a reader read $0.0156$ as strong. Second, a two-level
+(dataset, seed) resampling is not available to us: the three-seed replicates cover
+only four datasets and the per-window traces exist for seed $2021$ alone, so the
+seed floor of \S\ref{sec:effectsize} and the dataset clustering here cannot be
+combined into one interval. We report them side by side and note that both point
+the same way for the two selector effects, whose magnitudes ($0.67$ and $0.87$
+points) sit inside the $0.30$--$2.41\%$ interquartile band of
+within-configuration dispersion.
+
+\paragraph{Absolute error, not only relative gain.}
+One asymmetry is easy to hide behind percentages. ``Positive in $22\%$ of groups''
+does not mean ``worse in $78\%$'': some groups tie exactly, because the selector
+happens to reproduce the frozen arm. Reading the absolute MSE instead, the in-pool
+gate is strictly worse than \arm{bf} in $68$ of $96$ groups ($70.8\%$), by a median
+of $+0.0046$ MSE and up to $+0.096$ (iTransformer/ILI/$H{=}24$, $2.294 \to 2.390$),
+and the legal online selector is strictly worse in $79$ of $123$ groups ($64.2\%$),
+by a median of $+0.0043$ and up to $+0.079$ (DLinear/ETTh2/$H{=}720$,
+$0.522 \to 0.601$, a $25.7\%$ relative regression). The classifier-headed gate and
+the LODO gate are worse in $70.8\%$ and $77.6\%$ of groups. Absolute MSE is not
+comparable across datasets --- ILI is an order of magnitude above ETT --- so we use
+it only for the direction and the per-group worst case, which is the number a
+practitioner deciding whether to deploy a gate should see.
+
 \section{What is actually recoverable}
 \label{sec:recover}
 
@@ -1014,18 +1234,37 @@ $\arm{online} - \arm{bf\_test}$ & $-2.32\%$ \\
 \end{tabular}
 \end{table}
 
-The time-varying component is negative. The only real effect is that
+The time-varying component is negative. What is left is that
 validation-based arm choice is wrong in a third of groups, and delayed feedback
-partially corrects that \emph{constant} choice. This is a legitimate, modest,
+partially corrects that \emph{constant} choice. This is a modest,
 deployable claim: \emph{use online feedback to fix plug-in mis-selection, not to
-adapt per window.} Any paper claiming window-level adaptation must publish the
-\arm{best\_fixed\_test} column, or the claim is unfalsifiable.
+adapt per window.} A paper claiming window-level adaptation should publish the
+\arm{best\_fixed\_test} column, because without it the reader cannot tell the two
+apart.
+
+\paragraph{Two openings we did not close.}
+Both follow from where our evidence stops rather than from where it points.
+\emph{Different feedback.} The whole audit assumes the selector's signal is the
+realized per-window error, which arrives one horizon late. A signal that arrives
+sooner --- the error at early lead times within an in-flight forecast, a cheap
+surrogate for it, or an exogenous regime indicator that needs no feedback at all
+--- is not subject to the delay and is not tested here. The correlation-length
+measurement says the \emph{lagged realized error} is uninformative at the legal
+lag; it says nothing about a proxy available at decision time.
+\emph{Coarser granularity.} Between the per-window axis, which has headroom but no
+usable memory, and the per-run axis, which is what \arm{best\_fixed\_val} already
+does, there is a range of segment lengths we did not sweep: switch once per $H$
+windows, once per month, once per detected regime. The half-life of $9$ windows is
+short relative to $H$, but a policy that commits for $k \gg$ half-life windows is
+not asking the identity to persist --- it is asking the \emph{marginal} best arm to
+drift slowly, which our data does not rule out. Both would reuse the released
+per-window arrays and neither needs new training.
 
 \section{A checklist for adaptive-selection claims}
 \label{sec:checklist}
 
 The audit generalizes beyond plug-ins to any ``learn which model/module to use
-when'' claim. We propose five tests, all cheap once per-window errors are
+when'' claim. We propose seven tests, all cheap once per-window errors are
 persisted:
 
 \begin{enumerate}\itemsep2pt
@@ -1035,8 +1274,11 @@ labels independently per window. If it does not move
 be cited as headroom.
 \item \textbf{Correlation-length test.} Report the half-life of best-arm
 identity in units of the decision lag. If $\text{half-life}/\text{lag} \ll 1$
-(here: mean $0.061$, median $0.051$), no causal selector can work; ours is
-$<0.25$ in $20/20$ strata.
+(here: mean $0.061$, median $0.051$, $<0.25$ in $20/20$ strata), a selector that
+depends only on lagged realized feedback has very little to work with, and none of
+the three families we evaluated overcame it. The test is diagnostic, not a
+proof of impossibility: a selector using information other than lagged feedback is
+not covered by it.
 \item \textbf{Deployable-baseline test.} Compare against the arm frozen from
 validation, and publish the post-hoc constant arm too, so that
 ``adaptation'' is separated from ``fixing a bad constant choice''
@@ -1044,16 +1286,34 @@ validation, and publish the post-hoc constant arm too, so that
 \item \textbf{Shuffled-feature test.} Train the identical model on
 column-shuffled features. The difference, not the raw gain, is your evidence
 (here: $-0.22$ points).
-\item \textbf{Same-split test.} Before blaming distribution shift or noisy
+\item \textbf{Within-split test.} Before blaming the val$\to$test source
+difference or noisy
 labels, fit and evaluate the selector inside one split, chronologically, with
-the fixed-arm baseline chosen on the same fitting segment. A selector that
-cannot win with zero drift and unbiased labels
-(Table~\ref{tab:splitgate}) will not win in deployment, and this costs no
-additional training.
+the fixed-arm baseline chosen on the same fitting segment, and purge at least $H$
+forecast origins at the boundary so the two segments do not share targets. A
+selector that loses in this easier setting
+(Table~\ref{tab:splitgate}) is unlikely to win in deployment, and this costs no
+additional training. Report the drift that remains: the setting removes the source
+difference, not the shift (here median $25.5\%$ in the baseline arm's error level).
+\item \textbf{Absolute-regression test.} Report how often the selector's
+\emph{absolute} error is worse than the frozen arm's, not only how often its
+relative gain is positive. The two are not complements: our in-pool gate is
+positive in $22\%$ of groups but strictly worse in $71\%$ (median $+0.0046$ MSE,
+maximum $+0.096$), and the legal online selector is positive in $20\%$ but
+strictly worse in $64\%$ (median $+0.0043$, maximum $+0.079$). The remainder are
+ties, and a reader who sees only the positive share will over-estimate the
+downside protection.
+\item \textbf{Dataset-unit test.} If the claim is that a selector works
+``in general'', resample datasets rather than configurations, and report a
+leave-one-dataset-out sweep. With eight datasets an exact paired test cannot go
+below $p = 0.0078$, so say so instead of quoting a group-level $p$ of $10^{-6}$
+that assumes $123$ independent units (\S\ref{sec:cluster}).
+
 \end{enumerate}
 
 Tests 1--2 say whether the target is reachable, test 5 whether the pipeline is
-to blame, tests 3--4 whether a reported win is a win.
+to blame, tests 3--4 and 6 whether a reported win is a win, and test 7 whether it
+is a win anywhere but the datasets it was tuned on.
 
 For the reporting side, \S\ref{sec:main}--\S\ref{sec:effectsize} add four more
 that cost nothing but a few lines of analysis code:
@@ -1128,6 +1388,15 @@ missing      & $31$ & $0$  & $+11.40$ & $0.053$ & $-0.002$ \\
 \end{tabular}
 \end{table}
 
+\paragraph{Datasets as the scarce unit.}
+The grid has $844$ phase-one runs and $123$ online decision groups but only eight
+datasets, and a cross-dataset claim has eight units, not $123$.
+\S\ref{sec:cluster} reports every headline effect with the dataset as the
+resampling unit for that reason; the practical consequence is that the online
+result is directional rather than significant at the dataset level, and that we
+cannot rank the four arms across datasets at all. Adding datasets, not seeds or
+horizons, is the cheapest way to strengthen or overturn anything in this paper.
+
 \paragraph{Other caveats.}
 (i) A small number of windows produce NaN features when a channel is constant
 inside the window; the tree model handles missing values natively and we do not
@@ -1138,9 +1407,12 @@ sweep; we aligned seeds and checked the reproducibility of duplicate cells.
 (iv) Missing cells concentrate in the expensive corner, so every cross-backbone
 average in this paper is computed on a single common block set.
 (v) The lead-time audit of \S\ref{sec:leadtime} resolves the horizon into
-quarters, not individual steps; a finer partition could expose switching that
-quarters average away, though it cannot raise the oracle ceiling by much, since
-the quarter-level oracle is already within $0.24\%$ of a frozen arm.
+quarters, not individual steps. A per-step oracle is a refinement of the
+quarter-wise one, so its headroom is at least the $+0.24\%$ we measure and could be
+larger; we have no measurement of how much larger, because per-step validation
+errors were not persisted. The quarter-wise number is therefore a statement about
+quarter-wise policies, not a ceiling on all lead-time policies, and the
+corresponding claim in \S\ref{sec:leadtime} is stated that way.
 (vi) \arm{revin} was deliberately pruned outside \arm{DLinear}
 (\S\ref{sec:protocol}), so its metric-level verdict in
 Table~\ref{tab:metric-robust} rests on $44$ blocks that are predominantly one
@@ -1160,18 +1432,35 @@ summarizes and tunes them inflates the reported effect past the effect itself:
 block filtering, the metric, the choice of mean or median, and the default
 hyper-parameter each move the headline by more than the claim. That
 conditionality invites a selector, and a per-window oracle appears to promise
-$10\%$ for building one. We showed that this promise is a statistical mirage
-(the oracle is invariant to per-window arm re-labeling), that the underlying
-structure is nonetheless real and reproducible across training seeds, and that
-it is unusable anyway because the identity of the best arm decorrelates with a
-median half-life of $5.1\%$ of the forecast horizon (mean $6.1\%$) while
-deployment forces a decision lag of exactly one horizon. Three selector families
-fail accordingly and
-the break-even delay is a quarter of a horizon. The one selection axis that
-deployment does \emph{not} forbid, the lead-time index, turns out to have an
-oracle headroom of $+0.24\%$, so it is closed for the opposite reason. The only
-recoverable gain is the correction of a constant mis-selection. We recommend that
-the field stop tuning gates and start publishing the audits above.
+$10\%$ for building one.
+
+We showed that the promise does not mean what it is taken to mean: the oracle is
+invariant to per-window arm re-labeling, so its size measures the dispersion of arm
+errors within a window and not any learnable association. The underlying structure
+is nonetheless real and largely reproducible across training seeds --- on most of
+the grid; for \arm{iTransformer} under half of it survives a seed change. What
+makes it unusable here is timing. The identity of the best arm decorrelates with a
+median half-life of $5.1\%$ of the forecast horizon (mean $6.1\%$), while the
+feedback model that a horizon-$H$ forecaster is scored under admits no decision lag
+shorter than $H$. Three selector families lose to the arm frozen on validation, the
+break-even delay is a quarter of a horizon, and a quarter-wise oracle on the one
+axis that carries no delay --- the lead-time index --- is worth $+0.24\%$. What
+remains recoverable in our data is the correction of a constant mis-selection.
+
+We are deliberate about the size of that conclusion. It is an audit of one
+protocol: three plug-ins on four backbones and eight datasets, a feedback model in
+which realized error arrives one horizon late, three selector families, and MSE and
+MAE on the standard splits. Read with datasets as the unit of generalization ---
+which is the unit a claim about ``plug-in selection'' rests on --- the oracle
+headroom and the gating loss hold across all eight, while the online loss is
+directional ($7/8$ datasets negative, $95\%$ CI $[-1.75, +0.07]$). We do not
+conclude that per-window plug-in selection is impossible, and \S\ref{sec:recover}
+names the two openings we would look at first: feedback that is not the full
+realized error --- an early-lead-time proxy, a cheap surrogate, an exogenous regime
+label --- and selection at a granularity coarser than the window but finer than the
+run. What we do conclude is that a per-window oracle number, on its own, is not
+evidence that any of this works, and that the seven audits of
+\S\ref{sec:checklist} cost less than the gate they replace.
 
 % CRediT is emitted from the \credit{} declaration in the front matter; do not
 % also write the section out by hand or it appears twice.
@@ -1198,10 +1487,24 @@ take full responsibility for the content of the publication.
 This study and the companion manuscript \citep{companion2026b} share an
 experimental infrastructure and a research programme but address disjoint
 questions and report disjoint results: this paper asks whether per-window plug-in
-selection is learnable under a legal feedback delay, and the companion asks
-whether a stored per-sample artifact is in the order its consumer assumes.
-Neither manuscript's claims depend on the other's; the overlap is disclosed here
-so that editors and reviewers can assess it directly.
+selection pays under a legal feedback delay, and the companion asks
+whether a stored per-sample artifact is in the order its consumer assumes. To let
+editors and reviewers assess the overlap directly we state it explicitly.
+\emph{Shared:} the forecasting grid and the trained checkpoints that produced the
+per-window error arrays, the dataset preparation code, and the loader-order defect
+described in \S\ref{sec:threats}, which is reported identically in both
+manuscripts.
+\emph{Exclusive to this paper:} the reporting-lever analysis, the $\alpha$ sweep,
+the seed-noise and compute accounting, the re-labeling proposition, the
+correlation-length and half-life audit, the three selector families and their
+controls, the lead-time audit, the dataset-level re-analysis of
+\S\ref{sec:cluster}, and the checklist.
+\emph{Exclusive to the companion:} the statistical order diagnostics, the
+negative-control degeneracy result, and the provenance contract, of which this
+paper uses only the resulting deterministic-order marker.
+No contribution is claimed in both manuscripts, and neither manuscript's
+conclusions depend on the other being accepted. The two releases are versioned and
+archived independently.
 
 \section*{Data availability}
 All datasets used in this study are public standard benchmarks (ETT, Electricity,

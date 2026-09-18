@@ -1,0 +1,78 @@
+{
+  "generated_from": "monday_final/, artifacts/robustness/, artifacts/features.csv, configs/, paper/main.tex (read-only)",
+  "n_items": 9,
+  "items": [
+    {
+      "item": "1_table1_two_conventions",
+      "paper_claim": "Table 1 \"Same raw runs, two aggregation conventions\": complete-block (44): fredf +3.60 (p=0.0058, Holm 0.017), san_lite -1.29 (0.056/0.11), revin +3.55 (0.38/0.38); pairwise: fredf N=128 -2.37 (0.44/0.76), san_lite N=128 -3.94 (5e-8/1.5e-7), revin N=44 +3.55 (0.38/0.76)",
+      "recomputed_value": "全部 24 个单元格在容差内复现：complete 44 blocks (fredf +3.6035, p=0.005824, Holm 0.0175; san_lite -1.2876, 0.055826/0.1117; revin +3.5480, 0.3819/0.3819); pairwise 128/128/44 blocks (fredf -2.3731, 0.43818/0.7638; san_lite -3.9388, 4.95e-8/1.485e-7; revin +3.5480, 0.3819/0.7638)",
+      "verdict": "paper_correct",
+      "evidence_file": "artifacts/factcheck/item01_table1.csv",
+      "note": "计数自洽：四臂完整的 44 个 block 与 (none,revin) 可配对的 44 个 block 是同一集合，所以 revin 在两种口径下 N 与均值必然相同，没有哪一列偷偷少算或多算；两列确实来自同一份 844 run（complete-block 列用其中 340 run / 176 cell）。唯一未披露的口径细节：block 均值对 seed 数不平衡（58 个 block 是 3-seed 均值，64 个是单 seed，6 个混合）。"
+    },
+    {
+      "item": "2_table8_and_table13",
+      "paper_claim": "Table 8 (§8, tab:persist, main.tex L612): agreement 0.864/0.467/0.415/0.389/0.397, excess +0.469/+0.072/+0.020/-0.007/+0.002, z>2 127/93/72/37/41 of 127; caption \"Chance = sum p_k^2 = 0.395; after per-window re-labeling the measured agreement is 0.307, matching chance. Only l = H is causally legal.\" | Table 13 (§9.2, tab:splitgate, L879): val internal 81 / +2.01 / -1.18 / 35% / +11.35, test internal 111 / +2.33 / -0.53 / 38% / +10.37",
+      "recomputed_value": "Table 8 全部 20 个数值单元格与 Table 13 全部 10 个单元格都在容差内复现（如 lag H 0.38861 / -0.00651 / 37；test internal 111 / +2.3254 / -0.5276 / 37.84% / +10.3706）；重贴标签后的一致性 0.30672 = mean(1/K) = 0.30643，而 caption 定义的 chance = 0.39506",
+      "verdict": "paper_wrong",
+      "evidence_file": "artifacts/factcheck/item02_table8_table13.csv",
+      "note": "数字都对，错在 Table 8 的 caption 两句话：(a) 重贴标签后的 0.307 匹配的是均匀标签零模型 1/K=0.306，不是 caption 自己定义的 chance=0.395（低 0.088），\"matching chance\" 必须改；(b) \"Only l=H is causally legal\" 与同表 2H 行、§9.3/Table 15（2H 标 legal）矛盾，应写成 \"l>=H 合法，H 是最小合法滞后\"。另有两处口径提醒：lag H 行 0.389-0.395 四舍五入后是 -0.006 而印的是 -0.007（逐组 excess 均值 -0.0065，单元格各自无误，只是印出的三个数不自洽）；Table 13 两行的组集合不同（val internal 3 个骨干 81 组、test internal 4 个骨干 111 组），-1.18 与 -0.53 不能当同一批组的对比。127/123/96/76/31 在各表内分母统一，Table 17 行列小计相加一致。"
+    },
+    {
+      "item": "3_leadtime_oracle_granularity",
+      "paper_claim": "§7: \"An oracle that picks the best arm independently for each quarter beats none by +3.82% ... the per-lead-time oracle is worth +0.24% on average, exactly 0.00% at the median ... its ceiling anywhere in the grid is +3.29%. Since this is an oracle, no deployable per-lead-time rule can do better.\"; §12 (v): \"a finer partition ... cannot raise the oracle ceiling by much\"",
+      "recomputed_value": "粒度确认为 quarter-wise（4 段，seg1..seg4，128 个 block 全部 n_quarters=4，四段误差精确平均成 block MSE，最大偏差 2.0e-7）；quarter-wise oracle vs best fixed: mean +0.2402%, median 0.0000%, max +3.2894%, 56/128 个 block 有正增益, 12.5% 超过 0.5pp；vs none: mean +3.8218%, median +1.2663%",
+      "verdict": "paper_wrong",
+      "evidence_file": "artifacts/factcheck/item03_leadtime_oracle.csv",
+      "note": "数值全部正确，错的是不等式方向：+0.24% 只是「horizon 四等分、每段固定一个臂」这一族策略的 oracle 上界。per-step oracle 的损失 <= quarter oracle 的损失，所以 per-step 收益 >= +0.24%，quarter 值不能当任意 per-step oracle 的上界。建议表述：\"a quarter-wise lead-time oracle is worth +0.24% over the best frozen arm (median 0.00%, max +3.29%); finer partitions can only weakly increase this headroom, and we did not persist per-step errors to measure them\"。§12 caveat (v) 里「更细粒度也提高不了多少」这句无数据支持 → ambiguous，缺 per-step（或 2/8/16 段）逐 lead-time 误差。"
+    },
+    {
+      "item": "4_exchange_h720",
+      "paper_claim": "§9.3: \"the four excluded ones are Exchange at H=720 on all four backbones, where the legal delay (720 windows) exceeds the number of evaluation windows (399), so no legal decision can be made at all\"",
+      "recomputed_value": "Exchange/H=720：phase-1 有 39 次 run / 13 个 cell，全部 status=ok；p1_results.csv 的 n_test_windows / n_val_windows 两列不可用（Exchange 全为 NaN）；p2 产物里 n_test_windows=798、n_val_windows=41、延迟 720，代码把评估起点截断到 min(H, n//2)=399 → 798-720=78 次合法决策仍然存在；这 4 组仍进入 127 组的 lag/半衰期审计（lag H 只有 78 个重叠配对，DLinear 组 z=6.89），3 组进入 96 组 in-pool 门控（41 个验证窗口）",
+      "verdict": "paper_wrong",
+      "evidence_file": "artifacts/factcheck/item04_exchange_h720.csv",
+      "note": "「399 个评估窗口 / 连一次合法决策都做不了」写错了：真实测试窗口 798，399 是 src/selector_window.py 里 start=min(H, n//2) 的截断结果，去掉截断后还剩 78 个延迟后窗口。建议改成：\"these four groups were excluded because only 78 post-delay decisions (798 test windows minus a 720-window delay) would remain, which we treat as too few for a stable estimate\"。另外论文确实把 Exchange/H=720 当正常样本用了三处：128 块聚合（Table 1/2/3/4/7）、127 组 lag 与半衰期审计（Table 8/9/10，lag H 仅 78 个重叠配对）、96 组 in-pool 门控（只有 41 个验证窗口）。剔除这 4 组后 lag H 的 mean excess 从 -0.0065 变 -0.0120、z>2 从 37 变 35，结论方向不变，但应在文中披露。"
+    },
+    {
+      "item": "5_fredf_alpha",
+      "paper_claim": "§3/§5/Table 5: \"fredf (alpha=0.5)\"; sweep alpha in {0.1,0.3,0.5,0.7,0.9} plain and {0.1,0.5,0.9} sqrt(H); \"fixed alpha=0.5 (published default) -3.70; per-cell alpha tuned on validation +1.79; on test +2.29; tuning gap +5.48\"; \"59.4% of blocks are positive only after tuning\"",
+      "recomputed_value": "主实验（phase 1 与 phase 2）全部 cell 共用一个 alpha=0.5（configs/matrix.yaml / matrix_p2.yaml 各只有一个 alpha 条目）；sweep 每个 block 5 个 plain alpha + 3 个 sqrtH alpha = 768 个 alpha-cell，96 个 block（3 骨干）；alpha=1.0 未覆盖；mean gain: -3.6982 (alpha=0.5) / +1.7854 (val-tuned) / +2.2937 (test-tuned) / gap +5.4836；调参后为正 57/96=59.4%，但默认 alpha 下已经为正 45/96=46.9%，真正靠调参转正只有 14/96=14.6%",
+      "verdict": "paper_wrong",
+      "evidence_file": "artifacts/factcheck/item05_fredf_alpha.csv",
+      "note": "「主实验固定 alpha=0.5、每个 cell 都一样」「sweep 覆盖 5+3 个 alpha、768 个 alpha-cell」「-3.70 / +1.79 / +2.29 / +5.48」「逐 cell 最优 alpha 平均 1.79 个」全部复现无误。错的一句是 §5 的「59.4% of blocks are positive only after tuning」：59.4% 是调参后为正的比例，默认 alpha=0.5 下已有 46.9% 为正，只有 14.6%（14/96）是靠调参才由非正翻正（另有 2 个 block 在默认下为正、按验证集调参后反而不为正）。建议改成：\"tuning raises the share of positive blocks from 46.9% at alpha=0.5 to 59.4%, and 14.6% of blocks flip sign\"。两处 ambiguous：alpha=0.5 被称为 published default（仓库内无出处，FreDF 原文把 alpha 当可调超参）、sweep 未覆盖 alpha=1.0。"
+    },
+    {
+      "item": "6_fig1_caption",
+      "paper_claim": "Fig. 1 caption (main.tex L729): \"The usable correlation length never reaches the decision lag. ... The solid line is the break-even condition half-life = H; no group comes within an order of magnitude of it, and most sit below the H/10 dashed line. ... the ratio half-life/H per horizon ... falling from 0.19 at H=24 to 0.021 at H=720. The decline is monotone within each of the two horizon families\"",
+      "recomputed_value": "127 组；max half-life/H = 0.3521（TimesNet/ILI/H=24），18/127 组 > 0.1，109/127 = 85.8% 在 H/10 以下；0 组 >= H；中位 ratio 0.192 (H=24) → 0.021 (H=720)，两个 horizon 家族内部各自单调下降",
+      "verdict": "paper_wrong",
+      "evidence_file": "artifacts/factcheck/item06_fig1_caption.csv",
+      "note": "\"never reaches the decision lag\" 这个绝对词在组级别有数据支持（127/127 组 half-life < H，最大 0.352H），可以保留；但同一图注里的 \"no group comes within an order of magnitude of it\" 被数据推翻：18/127 组 half-life/H > 0.1，最大 0.352（距 break-even 仅 2.8 倍）。建议替换为：\"most groups sit below the H/10 dashed line (109/127 = 86%), and every group-level half-life stays below H (max 0.35H)\"。图注其余定量陈述（0.19→0.021、两族内单调、H=96 的抬升是换家族）都正确。"
+    },
+    {
+      "item": "7_seed_coverage",
+      "paper_claim": "§6: \"For 208 configurations we trained three seeds, giving 144 block-arm pairs ... the median sigma_seed is 0.0049 MSE ... 28% of block-level plug-in effects are smaller than the noise\"; §8.3 / abstract: \"For 48 cells we retrain with only the training seed changed ... 79% surviving a seed change\"",
+      "recomputed_value": "428 个 cell 中 208 个有 3 seed（2021/2022/2023）、220 个只有 1 seed（48.6% 覆盖）；3-seed 只集中在 ETTh1/ETTh2/Exchange/ILI 四个 cheap 数据集，ETTm1/ETTm2/Electricity/Weather 全为单 seed；128 个 block 中 58 个（45.3%）全臂三 seed、64 个全臂单 seed、6 个混合；seed 噪声分析覆盖 144/300 个 block-arm 对（48%）；seed 复制审计覆盖 48/127 组（37.8%）、只含 3 个骨干；median sigma_seed（组合尺度）= 0.00987，而非论文的 0.0049（0.004947 是单臂 SD 中位数）；79% 的可复现比例按骨干分解为 DLinear 99.1% / PatchTST 87.2% / iTransformer 48.7%",
+      "verdict": "paper_wrong",
+      "evidence_file": "artifacts/factcheck/item07_seed_coverage.csv",
+      "note": "计数类声明（208 configs、144 pairs、48 cells、79%）全部复现，但三处必须补/改：(a) \"median sigma_seed = 0.0049\" 标错了量——sqrt(s_arm^2+s_none^2) 的中位数是 0.0099，0.0049 是单臂 seed SD 的中位数，两个 seed 均值之差的标准误则是 0.0057；(b)「跨 seed」只覆盖 48.6% 的 cell / 45.3% 的 block，且全部落在四个 cheap 数据集，ETTm1/ETTm2/Electricity/Weather 一个 3-seed cell 都没有，应在 §6 明说；(c) 摘要的 79% 建立在 48/127 组（37.8%，无 TimesNet）上，且骨干间从 99.1% 到 48.7%，应同时报告异质性。"
+    },
+    {
+      "item": "8_same_split_zero_drift_purge",
+      "paper_claim": "§9.2 title \"Same-distribution split diagnostic\" and \"Under zero drift and zero label bias the gate still loses to a frozen arm (-0.53)\"; §11 checklist test 5 \"A selector that cannot win with zero drift and unbiased labels ... will not win in deployment\"",
+      "recomputed_value": "在 84 个可核组上，none 的 MSE 在 fit 段（前 70%）与 eval 段（后 30%）之间的相对落差：中位 |drift| 25.5%、均值 40.0%、最大 +155.4%、最小 -29.8%，61/84 组超过 10%、28/84 组超过 50%；main.tex 中 'purge' 出现 0 次，中位 22.2% 的评估窗口的预测目标与 fit 段目标重叠（9/84 组 100% 重叠），若按 L+H 间隔要求则升到 25.0%",
+      "verdict": "paper_wrong",
+      "evidence_file": "artifacts/factcheck/item08_same_split.csv",
+      "note": "\"zero drift\" 不成立：同一 split 内部的时间前后段之间，基线臂 none 的误差水平中位数就差 25.5%（最大 +155%），方向双侧；而且论文没有任何 purge（全文 0 次），相邻窗口在 fit/eval 边界共享预测目标，中位 22.2% 的评估窗口被污染、9/84 组 100% 被污染。建议改成：\"within-split chronological diagnostic: fitting on the first 70% and evaluating on the last 30% of one split removes the val->test source difference and the label optimism, but not distribution drift (median |shift| of the none-arm MSE between the two segments is 25%) and, without a purge of at least H forecast origins, the first H-1 evaluation windows still share targets with the fitting segment\"；\"zero label bias / all backbones covered\"（test 源、4 个骨干、111 组）可以保留。ambiguous 部分：111 组里只有 84 组能反解出 fit 段 MSE，其余 27 组（含全部 TimesNet）缺全测试段 none MSE；逐窗口误差数组未公开，无法直接做协变量分布检验。"
+    },
+    {
+      "item": "9_absolute_mse_regression_threshold",
+      "paper_claim": "§9.1/§9.3 只给相对口径：\"Gating loses to a frozen arm by 0.67 points (positive in 22% of groups)\"、\"The legal configuration loses (-0.87, positive in 20% of groups)\"；全文没有绝对 MSE 的回退统计",
+      "recomputed_value": "static gate (in-pool reg, 96 组)：68 组 (70.8%) 的绝对 MSE 高于 bf，变差幅度中位数 0.00463、P90 0.01330、max 0.09572 (iTransformer/ILI/H=24, 2.2943 -> 2.3900)；相对口径中位 +1.27%、max +6.13%。online selector（合法延迟, 123 组）：79 组 (64.2%) 变差，中位 0.00425、P90 0.01931、max 0.07907 (DLinear/ETTh2/H=720, 0.5223 -> 0.6013)，相对 max +25.71%；clf 门控 68/96 (70.8%)、LODO 门控 59/76 (77.6%)",
+      "verdict": "paper_correct",
+      "evidence_file": "artifacts/factcheck/item09_absolute_mse.csv",
+      "note": "这是补算，不是纠错：绝对 MSE 视角与论文的相对口径结论同向且更严厉——in-pool 门控在 70.8% 的组、合法在线选择器在 64.2% 的组绝对 MSE 变差（论文只说「只有 22% / 20% 的组为正」，其余组里 7 个（门控）/ 19 个（在线）是恰好持平）。最差的几组：iTransformer/ILI/H=24 与 iTransformer/ILI/H=36（门控，+0.0957 / +0.0526 MSE）、DLinear/ETTh2/H=720 与 TimesNet/Exchange/H=336（在线，+0.0791 / +0.0537 MSE）。注意绝对 MSE 跨数据集不可直接相加（ILI 的 MSE 量级比 ETT 大一个数量级），所以 CSV 同时给了相对列。"
+    }
+  ]
+}

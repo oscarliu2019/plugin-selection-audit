@@ -125,6 +125,52 @@ class Artefacts:
     def rb_summary(self) -> dict[str, Any]:
         return json.loads((self.robust / "robustness_summary.json").read_text())
 
+    # ---- 数据集级 / 事实核查增量产物 ------------------------------------- #
+    @cached_property
+    def cluster(self) -> dict[str, Any]:
+        """`artifacts/cluster/cluster_summary.json`：以 dataset 为单位的重采样结论。"""
+        return json.loads(
+            (self.root / "artifacts" / "cluster" / "cluster_summary.json").read_text())
+
+    @cached_property
+    def cluster_boot(self) -> pd.DataFrame:
+        return pd.read_csv(self.root / "artifacts" / "cluster" / "cluster_bootstrap.csv")
+
+    @cached_property
+    def dataset_effects(self) -> pd.DataFrame:
+        return pd.read_csv(self.root / "artifacts" / "cluster" / "dataset_effects.csv")
+
+    def fc(self, item: str, quantity: str, location: str | None = None) -> float:
+        """从 `artifacts/factcheck/<item>.csv` 取一个复算值。
+
+        事实核查表的 schema 统一为 (location, quantity, recomputed_value, ...)，
+        所以一个取值助手就够，不需要每张表一个 loader。
+        """
+        path = self.root / "artifacts" / "factcheck" / f"{item}.csv"
+        df = pd.read_csv(path)
+        sel = df.quantity == quantity
+        if location is not None:
+            sel &= df.location == location
+        row = df[sel]
+        if len(row) != 1:
+            raise KeyError(f"{item}.csv: {quantity!r} -> {len(row)} 行")
+        return float(row.iloc[0].recomputed_value)
+
+    def cl(self, *path: str) -> float:
+        """从 `cluster_summary.json` 按路径取一个标量。"""
+        node: Any = self.cluster
+        for key in path:
+            node = node[key]
+        return float(node)
+
+    def cboot(self, effect: str, stat: str, col: str) -> float:
+        df = self.cluster_boot
+        row = df[(df.metric == effect) & (df.statistic == stat)
+                 & (df.scope == "all_datasets")]
+        if len(row) != 1:
+            raise KeyError(f"cluster_bootstrap.csv: {effect}/{stat} -> {len(row)} 行")
+        return float(row.iloc[0][col])
+
     # ---- 取值助手 -------------------------------------------------------- #
     def j(self, dotted: str) -> float:
         """按点分路径从 `weekend_report.json` 取一个标量。"""
@@ -648,7 +694,8 @@ def _claims() -> list[Claim]:
         C("persist.lagH", "§8", 0.3886, 5e-4, "oracle_audit.csv",
           lambda a: float(a.oracle_audit.persist_lagH.mean()), ("0.389",)),
         C("persist.excess_lagH", "§8", -0.0065, 5e-4, "oracle_audit.csv",
-          lambda a: float(a.oracle_audit.excess_persist_lagH.mean()), ("-0.007",)),
+          lambda a: float(a.oracle_audit.excess_persist_lagH.mean()), ("-0.006",),
+          note="表 8 印 -0.006（四舍五入自 -0.0065），正文两处同步"),
         C("persist.lag2H", "§8", 0.3965, 5e-4, "oracle_audit.csv",
           lambda a: float(a.oracle_audit.persist_lag2H.mean()), ("0.397",)),
         C("persist.z_gt2_lag1", "§8", 127, 0, "oracle_audit.csv",
@@ -848,8 +895,22 @@ def _claims() -> list[Claim]:
           "selector_window_online.csv（Exchange, H=720）",
           lambda a: float(a.online_raw[
               (a.online_raw.dataset == "Exchange")
-              & (a.online_raw.pred_len == 720)].n_eval_windows.max()), ("399",),
-          note="合法延迟 720 > 399 个评估窗口，这 4 组连一次合法决策都做不了"),
+              & (a.online_raw.pred_len == 720)].n_eval_windows.max()),
+          note="这一列是 src/selector_window.py 里 start=min(H, n//2) 的截断结果，"
+               "不是真实测试窗口数（798）。论文改成报告 798 与 78 次延迟后决策，"
+               "所以此处不再做字面检查，只留作口径记录"),
+        C("online.exchange720_test_windows", "§9.3", 798, 0,
+          "selector_window_online.csv（Exchange, H=720）",
+          lambda a: float(a.online_raw[
+              (a.online_raw.dataset == "Exchange")
+              & (a.online_raw.pred_len == 720)].n_test_windows.max()), ("798",)),
+        C("online.exchange720_post_delay", "§9.3", 78, 0,
+          "798 - 720",
+          lambda a: float(a.online_raw[
+              (a.online_raw.dataset == "Exchange")
+              & (a.online_raw.pred_len == 720)].n_test_windows.max()) - 720.0,
+          ("78",),
+          note="合法延迟后还剩 78 次决策，太少所以排除，而不是「无法决策」"),
         C("online.insufficient_all_exchange720", "§9.3", 4, 0,
           "selector_window_online.csv",
           lambda a: float(((a.online_raw.insufficient)
@@ -905,6 +966,221 @@ def _claims() -> list[Claim]:
           lambda a: a.gap_row("missing", "mean_excess_lagH"), ("-0.002",)),
         C("gap.n_missing", "§12", 31, 0, "coverage_gap_splitfix.csv",
           lambda a: a.gap_row("missing", "n_groups_test_side"), ("31",)),
+    ]
+
+    # ---- §11 数据集为单位的重采样 ---------------------------------------- #
+    # 这一组守的是 major revision 的核心让步：一个「选择器普遍有效」的主张，
+    # 单位是 8 个 dataset 而不是 123 个 decision group。
+    out += [
+        C("cluster.n_datasets", "§11", 8, 0, "cluster_summary.json",
+          lambda a: a.cl("unit_hierarchy", "n_datasets"),
+          note="裸整数，不做字面检查"),
+        C("cluster.n_groups_online", "§11", 123, 0, "cluster_summary.json",
+          lambda a: a.cl("unit_hierarchy", "n_groups_online")),
+        C("cluster.oracle_point", "§11", 10.1455, 5e-3, "cluster_bootstrap.csv",
+          lambda a: a.cboot("b_oracle_vs_none", "pooled_mean", "point_pct"),
+          ("+10.15",)),
+        C("cluster.oracle_ci_lo", "§11", 6.3777, 5e-2, "cluster_bootstrap.csv",
+          lambda a: a.cboot("b_oracle_vs_none", "pooled_mean", "ci95_lo_pct"),
+          ("+6.38",)),
+        C("cluster.oracle_ci_hi", "§11", 13.9071, 5e-2, "cluster_bootstrap.csv",
+          lambda a: a.cboot("b_oracle_vs_none", "pooled_mean", "ci95_hi_pct"),
+          ("+13.91",)),
+        C("cluster.oracle_datasets_positive", "§11", 8, 0, "cluster_summary.json",
+          lambda a: a.cl("effects", "b_oracle_vs_none", "n_datasets_mean_positive"),
+          ("8/8",)),
+        C("cluster.oracle_lodo_min", "§11", 9.2129, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("lodo", "b_oracle_vs_none", "min_mean_pct"), ("+9.21",)),
+        C("cluster.oracle_lodo_max", "§11", 11.4510, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("lodo", "b_oracle_vs_none", "max_mean_pct"), ("+11.45",)),
+        C("cluster.oracle_p_dataset", "§11", 0.0078125, 1e-6, "cluster_summary.json",
+          lambda a: a.cl("dataset_level_tests", "b_oracle_vs_none",
+                         "dataset_level_wilcoxon_p"), ("0.0078",)),
+
+        C("cluster.gate_point", "§11", -0.6679, 5e-3, "cluster_bootstrap.csv",
+          lambda a: a.cboot("c_gate_vs_bf", "pooled_mean", "point_pct"), ("-0.67",)),
+        C("cluster.gate_ci_lo", "§11", -0.9417, 5e-3, "cluster_bootstrap.csv",
+          lambda a: a.cboot("c_gate_vs_bf", "pooled_mean", "ci95_lo_pct"), ("-0.94",)),
+        C("cluster.gate_ci_hi", "§11", -0.3670, 5e-3, "cluster_bootstrap.csv",
+          lambda a: a.cboot("c_gate_vs_bf", "pooled_mean", "ci95_hi_pct"), ("-0.37",)),
+        C("cluster.gate_datasets_positive", "§11", 1, 0, "cluster_summary.json",
+          lambda a: a.cl("effects", "c_gate_vs_bf", "n_datasets_mean_positive"),
+          ("1/8",)),
+        C("cluster.gate_lodo_min", "§11", -0.7840, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("lodo", "c_gate_vs_bf", "min_mean_pct"), ("-0.78",)),
+        C("cluster.gate_lodo_max", "§11", -0.5935, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("lodo", "c_gate_vs_bf", "max_mean_pct"), ("-0.59",)),
+        C("cluster.gate_p_dataset", "§11", 0.015625, 1e-6, "cluster_summary.json",
+          lambda a: a.cl("dataset_level_tests", "c_gate_vs_bf",
+                         "dataset_level_wilcoxon_p"), ("0.0156",)),
+        C("cluster.gate_best_dataset", "§11", 0.1451, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("effects", "c_gate_vs_bf", "best_dataset_mean_pct"),
+          ("+0.15",)),
+
+        C("cluster.online_point", "§11", -0.8699, 5e-3, "cluster_bootstrap.csv",
+          lambda a: a.cboot("a_online_vs_bf", "pooled_mean", "point_pct"), ("-0.87",)),
+        C("cluster.online_ci_lo", "§11", -1.7538, 5e-3, "cluster_bootstrap.csv",
+          lambda a: a.cboot("a_online_vs_bf", "pooled_mean", "ci95_lo_pct"), ("-1.75",)),
+        C("cluster.online_ci_hi", "§11", 0.0733, 5e-3, "cluster_bootstrap.csv",
+          lambda a: a.cboot("a_online_vs_bf", "pooled_mean", "ci95_hi_pct"), ("+0.07",)),
+        C("cluster.online_datasets_positive", "§11", 1, 0, "cluster_summary.json",
+          lambda a: a.cl("effects", "a_online_vs_bf", "n_datasets_mean_positive"),
+          ("1/8",)),
+        C("cluster.online_lodo_min", "§11", -1.2427, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("lodo", "a_online_vs_bf", "min_mean_pct"), ("-1.24",)),
+        C("cluster.online_lodo_max", "§11", -0.5860, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("lodo", "a_online_vs_bf", "max_mean_pct"), ("-0.59",)),
+        C("cluster.online_p_dataset", "§11", 0.078125, 1e-6, "cluster_summary.json",
+          lambda a: a.cl("dataset_level_tests", "a_online_vs_bf",
+                         "dataset_level_wilcoxon_p"), ("0.078",)),
+        C("cluster.online_best_dataset", "§11", 1.6231, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("effects", "a_online_vs_bf", "best_dataset_mean_pct"),
+          ("+1.62",)),
+        C("cluster.online_group_p_indefensible", "§11", 1.1989e-05, 1e-8,
+          "cluster_summary.json",
+          lambda a: a.cl("dataset_level_tests", "a_online_vs_bf",
+                         "group_level_wilcoxon_p"), ("1.2x10^-5",),
+          note="论文引用它是为了说明这个 p 值不可用，而不是作为证据"),
+        C("cluster.p_floor_n8", "§11", 0.0078125, 1e-9, "cluster_summary.json",
+          lambda a: a.cl("p_value_floor", "n8", "wilcoxon"), ("0.0078",)),
+        C("cluster.friedman_chi2", "§11", 7.8, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("friedman", "dataset_level_chi2"), ("7.80",)),
+        C("cluster.friedman_p", "§11", 0.05033, 5e-4, "cluster_summary.json",
+          lambda a: a.cl("friedman", "dataset_level_p"), ("0.050",)),
+        C("cluster.seed_rel_sd_median", "§11", 0.9479, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("seed_noise", "rel_sd_median_pct"), ("0.95",)),
+        C("cluster.seed_rel_sd_q25", "§11", 0.3009, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("seed_noise", "rel_sd_q25_pct"), ("0.30",)),
+        C("cluster.seed_rel_sd_q75", "§11", 2.4102, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("seed_noise", "rel_sd_q75_pct"), ("2.41",)),
+        C("cluster.seed_rel_sd_p90", "§11", 4.5453, 5e-3, "cluster_summary.json",
+          lambda a: a.cl("seed_noise", "rel_sd_p90_pct"), ("4.55",)),
+    ]
+
+    # ---- 绝对 MSE 回退（§11 与 checklist 第 6 条） ------------------------ #
+    GATE = "static gate (in-pool reg, 96 groups)"
+    ONLINE = "online selector (legal H delay, 123 groups)"
+    out += [
+        C("absmse.gate_worse_n", "§11", 68, 0, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "groups with higher absolute MSE than bf", GATE), ("68",)),
+        C("absmse.gate_worse_pct", "§11", 70.8333, 5e-3, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "share of groups worse in absolute MSE (%)", GATE),
+          ("70.8",)),
+        C("absmse.gate_median", "§11", 0.004629, 5e-6, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "median absolute MSE increase among worse groups", GATE),
+          ("+0.0046",)),
+        C("absmse.gate_max", "§11", 0.095723, 5e-6, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "max absolute MSE increase", GATE), ("+0.096",)),
+        C("absmse.online_worse_n", "§11", 79, 0, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "groups with higher absolute MSE than bf", ONLINE), ("79",)),
+        C("absmse.online_worse_pct", "§11", 64.2276, 5e-3, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "share of groups worse in absolute MSE (%)", ONLINE),
+          ("64.2",)),
+        C("absmse.online_median", "§11", 0.004250, 5e-6, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "median absolute MSE increase among worse groups", ONLINE),
+          ("+0.0043",)),
+        C("absmse.online_max", "§11", 0.079067, 5e-5, "item09_absolute_mse.csv",
+          lambda a: a.fc("item09_absolute_mse",
+                         "max absolute MSE increase", ONLINE), ("+0.079",)),
+    ]
+
+    # ---- 投稿版修掉的事实错误 -------------------------------------------- #
+    # 每一条对应审稿意见里的一个 P0：论文旧版说错了，这里锁住新版说法。
+    out += [
+        C("fix.alpha_positive_before_tuning", "§5", 46.875, 5e-3,
+          "item05_fredf_alpha.csv",
+          lambda a: a.fc("item05_fredf_alpha",
+                         "blocks already positive at alpha=0.5 (%)"), ("46.9",),
+          note="旧版写「59.4% 只有调参后才为正」，实际默认下已有 46.9% 为正"),
+        C("fix.alpha_flip_pct", "§5", 14.5833, 5e-3, "item05_fredf_alpha.csv",
+          lambda a: a.fc("item05_fredf_alpha",
+                         "blocks flipping from <=0 to >0 by tuning (%)"), ("14.6",)),
+        C("fix.seed_sigma_paired", "§6", 0.009872, 5e-6, "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "median sigma_seed = sqrt(s_arm^2+s_none^2)"), ("0.0099",),
+          note="旧版把 0.0049（单臂 SD）标成 sigma_seed"),
+        C("fix.seed_sigma_single_arm", "§6", 0.004947, 5e-6, "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "median pooled single-arm seed SD"), ("0.0049",)),
+        C("fix.seed_cells_3seed", "§6", 208, 0, "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "configurations with 3 seeds"), ("208",)),
+        C("fix.seed_cells_total", "§6", 428, 0, "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "configurations (backbone,dataset,H,arm)"), ("428",)),
+        C("fix.seed_blocks_full", "§6", 58, 0, "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "blocks where every available arm has 3 seeds"), ("58",)),
+        C("fix.seed_repro_dlinear", "§8.3", 99.0527, 5e-3, "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "reproducible share, DLinear (%)"), ("99.1",)),
+        C("fix.seed_repro_patchtst", "§8.3", 87.2187, 5e-3, "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "reproducible share, PatchTST (%)"), ("87.2",)),
+        C("fix.seed_repro_itransformer", "§8.3", 48.7208, 5e-3,
+          "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "reproducible share, iTransformer (%)"), ("48.7",)),
+        C("fix.seed_group_coverage_pct", "§8.3", 37.7953, 5e-3,
+          "item07_seed_coverage.csv",
+          lambda a: a.fc("item07_seed_coverage",
+                         "share of the 127 decision groups covered (%)"), ("37.8",)),
+        C("fix.fig1_max_ratio", "Fig.1", 0.352115, 5e-5, "item06_fig1_caption.csv",
+          lambda a: a.fc("item06_fig1_caption", "max half-life / H"), ("0.35",),
+          note="旧图注说「没有一组进到一个数量级内」，实际最大 0.35H"),
+        C("fix.fig1_above_tenth", "Fig.1", 18, 0, "item06_fig1_caption.csv",
+          lambda a: a.fc("item06_fig1_caption",
+                         "groups with half-life/H > 0.1"), ("18",)),
+        C("fix.fig1_below_tenth_pct", "Fig.1", 85.8268, 5e-3,
+          "item06_fig1_caption.csv",
+          lambda a: a.fc("item06_fig1_caption",
+                         "groups below the H/10 line (%)"), ("86",)),
+        C("fix.fig1_above_H", "Fig.1", 0, 0, "item06_fig1_caption.csv",
+          lambda a: a.fc("item06_fig1_caption", "groups with half-life >= H")),
+        C("fix.leadtime_quarters", "§7", 4, 0, "item03_leadtime_oracle.csv",
+          lambda a: a.fc("item03_leadtime_oracle", "n_quarters (unique value)"),
+          note="lead-time oracle 的粒度是四分段，不是逐步"),
+        C("fix.leadtime_oracle_mean", "§7", 0.240233, 5e-5,
+          "item03_leadtime_oracle.csv",
+          lambda a: a.fc("item03_leadtime_oracle",
+                         "quarter-wise oracle vs best fixed, mean (%)"), ("+0.24",)),
+        C("fix.leadtime_oracle_max", "§7", 3.289394, 5e-5,
+          "item03_leadtime_oracle.csv",
+          lambda a: a.fc("item03_leadtime_oracle",
+                         "quarter-wise oracle vs best fixed, max (%)"), ("+3.29",)),
+        C("fix.drift_median_pct", "§9.2", 25.4577, 5e-3, "item08_same_split.csv",
+          lambda a: a.fc("item08_same_split",
+                         "median |drift| of none MSE, fit vs eval segment (%)"),
+          ("25.5",), note="旧版声称 zero drift"),
+        C("fix.drift_mean_pct", "§9.2", 40.0060, 5e-3, "item08_same_split.csv",
+          lambda a: a.fc("item08_same_split", "mean |drift| (%)"), ("40.0",)),
+        C("fix.drift_max_pct", "§9.2", 155.4236, 5e-3, "item08_same_split.csv",
+          lambda a: a.fc("item08_same_split", "max drift (%)"), ("155.4",)),
+        C("fix.drift_groups", "§9.2", 84, 0, "item08_same_split.csv",
+          lambda a: a.fc("item08_same_split",
+                         "groups where fit-segment MSE is recoverable"), ("84",)),
+        C("fix.drift_gt10", "§9.2", 61, 0, "item08_same_split.csv",
+          lambda a: a.fc("item08_same_split", "groups with |drift| > 10% "), ("61",)),
+        C("fix.overlap_median_pct", "§9.2", 22.1845, 5e-3, "item08_same_split.csv",
+          lambda a: a.fc("item08_same_split",
+                         "median share of eval windows sharing targets with fit (%)"),
+          ("22.2",)),
+        C("fix.overlap_full_groups", "§9.2", 9, 0, "item08_same_split.csv",
+          lambda a: a.fc("item08_same_split",
+                         "groups where every eval window overlaps fit targets"),
+          ("9",)),
+        C("fix.overlap_LH_median_pct", "§9.2", 25.1466, 5e-3, "item08_same_split.csv",
+          lambda a: a.fc(
+              "item08_same_split",
+              "median share of eval windows whose input overlaps fit targets (%)"),
+          ("25.0",)),
     ]
 
     return out

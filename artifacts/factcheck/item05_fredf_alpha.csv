@@ -1,0 +1,19 @@
+location,quantity,paper_text,paper_value,recomputed_value,delta,verdict,note
+configs/matrix.yaml,alpha values used in phase 1 (main matrix),,0.5,0.5,0.0,paper_correct,主实验只有一个 alpha=[0.5]，所有 cell 同一个值，不做逐 cell 调参
+configs/matrix_p2.yaml,alpha in phase 2 window-trace runs,,0.5,0.5,0.0,paper_correct,与 phase 1 一致
+configs/matrix_p3_fredf.yaml,distinct alpha values trained in the sweep,,,5.0,,paper_correct,"sweep 新训的 alpha = [0.1, 0.3, 0.5, 0.7, 0.9]（0.5 复用 phase 1/2），plain 覆盖 {0.1,0.3,0.5,0.7,0.9}，sqrtH 覆盖 {0.1,0.5,0.9}"
+fredf_alpha.csv,plain alphas per block,,5.0,5.0,0.0,paper_correct,96 个 block 全部 5 个
+fredf_alpha.csv,sqrtH alphas per block,,3.0,3.0,0.0,paper_correct,96 个 block 全部 3 个
+fredf_alpha.csv,alpha-cells = 96 x (5+3),,768.0,768.0,0.0,paper_correct,
+fredf_alpha.csv,blocks in the sweep,,96.0,96.0,0.0,paper_correct,3 骨干 x 8 数据集 x 4 horizon，TimesNet 不在内
+fredf_alpha.csv,sweep covers alpha=1.0 (pure frequency loss),,,0.0,,ambiguous,sweep 最大只到 0.9，纯频域损失 (alpha=1) 未覆盖，论文未声明这一边界
+Table 5,mean gain at fixed alpha=0.5 (%),,-3.7,-3.6981617770135,0.0018382229865001598,paper_correct,
+Table 5,"mean gain, per-cell alpha tuned on validation (%)",,1.79,1.785390322639427,-0.00460967736057305,paper_correct,
+Table 5,"mean gain, per-cell alpha tuned on test (%)",,2.29,2.2937487363804587,0.003748736380458695,paper_correct,
+Table 5,tuning gap (%),,5.48,5.483552099652927,0.003552099652926799,paper_correct,val-tuned 减 fixed-0.5
+§5 text,"distinct best alpha per (backbone, dataset) across horizons",,1.79,1.7916666666666667,0.0016666666666667052,paper_correct,"逐 cell 调参确实是真的：同一对 (backbone, dataset) 平均 1.79 个最优 alpha"
+§5 text,blocks positive after per-cell tuning (%),,59.4,59.375,-0.02499999999999858,paper_correct,57/96
+§5 text,blocks already positive at alpha=0.5 (%),,,46.875,,paper_wrong,45/96 = 46.9% 在默认 alpha 下就已经是正的，所以「59.4% of blocks are positive only after tuning」把 59.4% 说成了「只有调参后才转正」
+§5 text,blocks flipping from <=0 to >0 by tuning (%),,,14.583333333333334,,paper_wrong,真正「只有调参后才转正」的是 14/96 = 14.6%
+§5 / §3,'alpha=0.5 (published default)',fixed alpha=0.5 (published default),,,,ambiguous,"仓库里没有任何产物或引用能证明 0.5 是 FreDF 的官方默认值：configs/matrix.yaml 自己写死 0.5，FreDF 原文（arXiv:2402.02399）把 alpha 当作需要调的超参、敏感性最优在 0.8 附近。要么补原文/官方配置出处，要么改称""a fixed midpoint reference alpha=0.5"""
+fredf_alpha.csv,best single alpha chosen on validation,,0.1,0.1,0.0,paper_correct,57/96 个 block 的最优 alpha 是 0.1
