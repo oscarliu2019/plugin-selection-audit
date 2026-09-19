@@ -10,9 +10,10 @@ Repository: <https://github.com/oscarliu2019/plugin-selection-audit>
 
 This repository is the public, self-contained reproduction package for the manuscript
 
-> **Per-window oracle headroom is not learnable: a feedback-delay audit of
-> plug-in selection for time series forecasting**
-> ([`paper/main.pdf`](paper/main.pdf), 17 pages)
+> **Large per-window oracle headroom that three selector families did not
+> convert: a feedback-delay audit of plug-in selection for time series
+> forecasting**
+> ([`paper/main.pdf`](paper/main.pdf), 22 pages)
 
 The paper is an **audit and a negative result**. It does not propose a new
 plug-in or a new selector. It shows that (i) the per-window oracle headroom that
@@ -387,9 +388,9 @@ experiments ran. Every module is summarised in English in the tree above, and
 
 ## Citing
 
-> M. Liu and C. Chen. *Per-window oracle headroom is not learnable: a
-> feedback-delay audit of plug-in selection for time series forecasting.* Under
-> review, 2026.
+> M. Liu and C. Chen. *Large per-window oracle headroom that three selector
+> families did not convert: a feedback-delay audit of plug-in selection for time
+> series forecasting.* Under review, 2026.
 
 If you use this audit, please cite the paper above. If you use only the checklist
 of §11 of the paper, citing the paper is still the right thing to do -- the

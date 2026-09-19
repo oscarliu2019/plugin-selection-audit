@@ -1,5 +1,5 @@
 {
-  "title": "plugin-selection-audit: artefacts and verification pipeline for “Per-window oracle headroom is not learnable”",
+  "title": "plugin-selection-audit: artefacts and verification pipeline for “Large per-window oracle headroom that three selector families did not convert”",
   "upload_type": "software",
   "license": "MIT",
   "creators": [
@@ -14,7 +14,7 @@
       "affiliation": "Independent Researcher, Shanghai, China"
     }
   ],
-  "description": "<p>Complete replication package for the manuscript <em>Per-window oracle headroom is not learnable: a feedback-delay audit of plug-in selection for time series forecasting</em>.</p><p>Contents: the training grid and per-run artefacts; per-window oracle-headroom decompositions; the feedback-delay (lead-time) audit; the robustness sweeps over metric, aggregation and block-filtering choices; the selector implementations and their evaluation; and a test suite covering the analysis code. <code>tools/verify_paper_numbers.py</code> re-derives all 204 quantitative claims of the manuscript from the released artefacts and fails on any mismatch.</p>",
+  "description": "<p>Complete replication package for the manuscript <em>Large per-window oracle headroom that three selector families did not convert: a feedback-delay audit of plug-in selection for time series forecasting</em>.</p><p>Contents: the training grid and per-run artefacts; per-window oracle-headroom decompositions; the feedback-delay (lead-time) audit; the robustness sweeps over metric, aggregation and block-filtering choices; the selector implementations and their evaluation; and a test suite covering the analysis code. <code>tools/verify_paper_numbers.py</code> re-derives all 204 quantitative claims of the manuscript from the released artefacts and fails on any mismatch.</p>",
   "keywords": [
     "time series forecasting",
     "model selection",
